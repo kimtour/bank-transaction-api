@@ -7,19 +7,13 @@
 
 A production-style REST API for account management and financial transactions, built to demonstrate backend engineering, API design, security, automated testing and CI/CD practices relevant to banking systems.
 
-## Free online demo deployment
+## Live demo
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/kimtour/bank-transaction-api)
+- **Landing page:** https://samuel-kimani-bank-api-demo.onrender.com/
+- **Interactive Swagger API:** https://samuel-kimani-bank-api-demo.onrender.com/docs
+- **Health check:** https://samuel-kimani-bank-api-demo.onrender.com/health
 
-The repository includes `render.yaml` for a free Render Web Service. The configured service name is `samuel-kimani-bank-api-demo`.
-
-After the first Render deployment, open the service URL and append:
-
-- `/` for the project landing page
-- `/docs` for the interactive Swagger API demo
-- `/health` for the health check
-
-Render's free web services can spin down after inactivity, so the first request after an idle period may take longer. The demo uses SQLite for simplicity, so data is intentionally disposable and can reset when the free service restarts. See [`docs/HOSTING.md`](docs/HOSTING.md) for the exact deployment steps and interview checklist.
+The service is hosted on Render's free web-service tier. The first request after a period of inactivity can take longer while the service wakes up. The demo uses SQLite, so data is intentionally disposable and can reset after a restart or redeploy.
 
 ## Interview demo
 
@@ -101,7 +95,7 @@ Open:
 ### 1. Register
 
 ```bash
-curl -X POST http://127.0.0.1:8000/auth/register \
+curl -X POST https://samuel-kimani-bank-api-demo.onrender.com/auth/register \
   -H 'Content-Type: application/json' \
   -d '{"username":"samuel","password":"StrongPass123"}'
 ```
@@ -109,7 +103,7 @@ curl -X POST http://127.0.0.1:8000/auth/register \
 ### 2. Login
 
 ```bash
-curl -X POST http://127.0.0.1:8000/auth/login \
+curl -X POST https://samuel-kimani-bank-api-demo.onrender.com/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"samuel","password":"StrongPass123"}'
 ```
