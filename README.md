@@ -7,6 +7,20 @@
 
 A production-style REST API for account management and financial transactions, built to demonstrate backend engineering, API design, security, automated testing and CI/CD practices relevant to banking systems.
 
+## Free online demo deployment
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/kimtour/bank-transaction-api)
+
+The repository includes `render.yaml` for a free Render Web Service. The configured service name is `samuel-kimani-bank-api-demo`.
+
+After the first Render deployment, open the service URL and append:
+
+- `/` for the project landing page
+- `/docs` for the interactive Swagger API demo
+- `/health` for the health check
+
+Render's free web services can spin down after inactivity, so the first request after an idle period may take longer. The demo uses SQLite for simplicity, so data is intentionally disposable and can reset when the free service restarts. See [`docs/HOSTING.md`](docs/HOSTING.md) for the exact deployment steps and interview checklist.
+
 ## Interview demo
 
 Open [`docs/INTERVIEW_DEMO.md`](docs/INTERVIEW_DEMO.md) for a focused 3 to 5 minute panel walkthrough, technical talking points and likely interview questions.
@@ -25,28 +39,31 @@ Open [`docs/INTERVIEW_DEMO.md`](docs/INTERVIEW_DEMO.md) for a focused 3 to 5 min
 - GitHub Actions CI on every push and pull request
 - Docker packaging for repeatable deployment
 - Environment-based configuration
+- Free cloud deployment with Render Infrastructure as Code
 
 ## Architecture
 
 ```text
-Client / Swagger UI
-        |
-        v
-     FastAPI
-        |
-  Authentication
-        |
-        v
- Service Layer
-        |
-        v
-   SQLAlchemy ORM
-        |
-        v
-      SQLite
+Browser / Client / Swagger UI
+            |
+            v
+        Render Web Service
+            |
+          FastAPI
+            |
+       Authentication
+            |
+            v
+       Service Layer
+            |
+            v
+      SQLAlchemy ORM
+            |
+            v
+          SQLite
 ```
 
-SQLite keeps the demo easy to run locally. The database layer can be switched to PostgreSQL through `DATABASE_URL` without changing the API contract.
+SQLite keeps the demo easy to run locally and online. The database layer can be switched to PostgreSQL through `DATABASE_URL` without changing the API contract.
 
 ## Main endpoints
 
@@ -125,6 +142,8 @@ Tests cover health checks, registration and login, protected endpoint authentica
 
 `.github/workflows/tests.yml` runs the automated test suite on every push and pull request to `main`. The CI badge at the top of this README reflects the current workflow status.
 
+The Render blueprint uses `autoDeployTrigger: checksPass`, so cloud deployments can follow successful CI checks.
+
 ## Docker
 
 ```bash
@@ -144,6 +163,8 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 **Environment configuration** separates application code from deployment settings and secrets.
 
+**Infrastructure as Code** keeps the free cloud deployment configuration version-controlled in `render.yaml`.
+
 ## Production improvements
 
 A production deployment would add PostgreSQL, Alembic migrations, structured audit logs, rate limiting, refresh tokens, secret management, observability, distributed tracing, database transaction isolation, row locking and integration with a core banking or payment system.
@@ -155,7 +176,8 @@ A production deployment would add PostgreSQL, Alembic migrations, structured aud
 3. Securing customer resources with authentication and ownership checks.
 4. Reducing regression risk through automated API tests.
 5. Moving quality checks into CI/CD with GitHub Actions.
-6. Extending the service to M-Pesa, core banking systems or other payment channels.
+6. Deploying safely after CI checks using version-controlled cloud configuration.
+7. Extending the service to M-Pesa, core banking systems or other payment channels.
 
 ## Author
 
