@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: samuel-kimani-bank-api-demo
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///bank.db
+      - key: ACCESS_TOKEN_MINUTES
+        value: "60"
