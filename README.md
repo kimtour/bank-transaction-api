@@ -1,6 +1,15 @@
 # Bank Transaction API
 
+![CI](https://github.com/kimtour/bank-transaction-api/actions/workflows/tests.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.12+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST_API-green)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
 A production-style REST API for account management and financial transactions, built to demonstrate backend engineering, API design, security, automated testing and CI/CD practices relevant to banking systems.
+
+## Interview demo
+
+Open [`docs/INTERVIEW_DEMO.md`](docs/INTERVIEW_DEMO.md) for a focused 3 to 5 minute panel walkthrough, technical talking points and likely interview questions.
 
 ## What this project demonstrates
 
@@ -37,7 +46,7 @@ Client / Swagger UI
       SQLite
 ```
 
-The SQLite database keeps the demo easy to run locally. The database layer can be switched to PostgreSQL through `DATABASE_URL` without changing the API contract.
+SQLite keeps the demo easy to run locally. The database layer can be switched to PostgreSQL through `DATABASE_URL` without changing the API contract.
 
 ## Main endpoints
 
@@ -90,11 +99,9 @@ curl -X POST http://127.0.0.1:8000/auth/login \
 
 Copy the returned access token and use Swagger's **Authorize** button.
 
-### 3. Create accounts
+### 3. Create accounts and transfer funds
 
 Create two KES accounts, then use `/transfers` to move funds between them.
-
-Example transfer request:
 
 ```json
 {
@@ -109,23 +116,14 @@ Example transfer request:
 ## Automated testing
 
 ```bash
-pytest -q
+pytest
 ```
 
-Tests cover:
-
-- Health checks
-- Registration and login
-- Protected endpoint authentication
-- Account creation
-- Deposits
-- Duplicate references
-- Insufficient balance handling
-- Transfers and transaction history
+Tests cover health checks, registration and login, protected endpoint authentication, account creation, deposits, duplicate references, insufficient balance handling, transfers and transaction history.
 
 ## CI/CD
 
-`.github/workflows/tests.yml` runs the automated test suite on every push and pull request to `main`.
+`.github/workflows/tests.yml` runs the automated test suite on every push and pull request to `main`. The CI badge at the top of this README reflects the current workflow status.
 
 ## Docker
 
@@ -148,18 +146,16 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 ## Production improvements
 
-A production deployment would add PostgreSQL, database migrations with Alembic, structured audit logs, rate limiting, refresh tokens, secret management, observability, distributed tracing, transactional row locking and integration with a core banking or payment system.
+A production deployment would add PostgreSQL, Alembic migrations, structured audit logs, rate limiting, refresh tokens, secret management, observability, distributed tracing, database transaction isolation, row locking and integration with a core banking or payment system.
 
 ## Interview talking points
 
-This project can be used to discuss:
-
-1. How business requirements become API contracts and validation rules.
-2. How financial operations protect against duplicate instructions and insufficient funds.
-3. How authentication and authorization protect customer data.
-4. How automated tests reduce regression risk.
-5. How GitHub Actions moves quality checks into CI/CD.
-6. How the same service could integrate with M-Pesa, a core banking platform or another payment channel.
+1. Translating financial business requirements into API contracts and validation rules.
+2. Protecting financial operations from duplicate instructions and insufficient funds.
+3. Securing customer resources with authentication and ownership checks.
+4. Reducing regression risk through automated API tests.
+5. Moving quality checks into CI/CD with GitHub Actions.
+6. Extending the service to M-Pesa, core banking systems or other payment channels.
 
 ## Author
 
