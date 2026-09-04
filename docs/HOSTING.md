@@ -1,49 +1,31 @@
 # Free Online Hosting with Render
 
-This project is configured for a free Render Web Service through `render.yaml`.
+This project is deployed as a free Render Web Service through `render.yaml`.
 
-## One-click deployment
+## Live service
 
-Use the **Deploy to Render** button in the main README.
+- Landing page: https://samuel-kimani-bank-api-demo.onrender.com/
+- Swagger API: https://samuel-kimani-bank-api-demo.onrender.com/docs
+- Health check: https://samuel-kimani-bank-api-demo.onrender.com/health
+- GitHub repository: https://github.com/kimtour/bank-transaction-api
+- GitHub Actions: https://github.com/kimtour/bank-transaction-api/actions
 
-Render will read `render.yaml` and propose a service with these settings:
+## Render configuration
 
 - Service name: `samuel-kimani-bank-api-demo`
-- Runtime: Python
+- Runtime: Python 3.12
 - Plan: Free
 - Region: Frankfurt
 - Health check: `/health`
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Build command: `python -m pip install --upgrade pip && python -m pip install -r requirements.txt`
+- Start command: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 - JWT secret: generated automatically by Render
 - Auto deploy: after linked CI checks pass
 
-## Final approval steps
-
-1. Sign in to Render.
-2. Open the Deploy to Render button from the repository README.
-3. Review the Blueprint.
-4. Keep the Free plan selected.
-5. Approve the deployment.
-6. Open the generated `onrender.com` service URL.
-7. Add `/docs` to open Swagger UI.
-
-## Panel links
-
-Once deployment finishes, keep these open before the interview:
-
-```text
-https://<your-render-service>.onrender.com/
-https://<your-render-service>.onrender.com/docs
-https://<your-render-service>.onrender.com/health
-https://github.com/kimtour/bank-transaction-api
-https://github.com/kimtour/bank-transaction-api/actions
-```
-
 ## Recommended live demo
 
-1. Open `/health` and show the service is online.
-2. Open `/docs`.
+1. Open the health endpoint and show the service is online.
+2. Open Swagger at `/docs`.
 3. Register a demo user.
 4. Log in and copy the access token.
 5. Click **Authorize** in Swagger and paste the token.
