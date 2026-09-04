@@ -6,17 +6,20 @@ Use this page as a 3 to 5 minute walkthrough during the panel interview.
 
 Start with the README and explain the goal in one sentence:
 
-> I built a banking transaction API to demonstrate how I translate financial business rules into a secure, testable REST service with CI/CD.
+> I built a banking transaction API to demonstrate how I translate financial business rules into a secure, testable REST service with CI/CD and cloud deployment.
 
-## 2. Show the API surface
+## 2. Open the live API
 
-Run the application locally:
+Use the hosted Swagger interface:
 
-```bash
-uvicorn app.main:app --reload
-```
+https://samuel-kimani-bank-api-demo.onrender.com/docs
 
-Open `http://127.0.0.1:8000/docs` and show:
+Also keep these open:
+
+- Landing page: https://samuel-kimani-bank-api-demo.onrender.com/
+- Health check: https://samuel-kimani-bank-api-demo.onrender.com/health
+
+Show these endpoints:
 
 - `POST /auth/register`
 - `POST /auth/login`
@@ -43,7 +46,8 @@ Highlight these controls:
 Explain the flow:
 
 ```text
-Client
+Browser / Client
+  -> Render Web Service
   -> FastAPI route
   -> JWT authentication
   -> service layer
@@ -66,28 +70,36 @@ Open `tests/test_api.py` and point out coverage for:
 - transfers
 - transaction history
 
-Run:
-
-```bash
-pytest
-```
-
 ## 6. Show CI/CD
 
 Open the GitHub Actions tab and show the green CI workflow.
 
 Explain:
 
-> Every push and pull request to main runs the automated test suite. A failed test blocks confidence in the change and gives immediate feedback before deployment.
+> Every push and pull request to main runs the automated test suite. Render is configured to deploy after successful checks, so the same repository demonstrates development, testing and deployment in one flow.
 
-## 7. Show Docker
+## 7. Show Docker and Infrastructure as Code
 
-Point to `Dockerfile` and `.dockerignore`.
+Point to:
 
-```bash
-docker build -t bank-transaction-api .
-docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
-```
+- `Dockerfile`
+- `.dockerignore`
+- `render.yaml`
+
+Explain that `render.yaml` keeps the cloud service configuration version-controlled.
+
+## Live demo sequence
+
+1. Open `/health`.
+2. Open `/docs`.
+3. Register a new user.
+4. Log in.
+5. Copy the JWT token and click **Authorize**.
+6. Create two KES accounts.
+7. Transfer KES 5,000 between them.
+8. Open `GET /accounts` and show the changed balances.
+9. Open `GET /transactions` and show the transfer record.
+10. Try a transfer that exceeds the available balance and show the validation error.
 
 ## Questions the panel may ask
 
@@ -113,4 +125,4 @@ The demo uses SQLite, so production concurrency controls are intentionally outsi
 
 ## Closing statement
 
-> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, implement business rules, secure access, test failure cases, automate quality checks through CI/CD and package the service for deployment.
+> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, implement business rules, secure access, test failure cases, automate quality checks through CI/CD and deploy the service to the cloud.
