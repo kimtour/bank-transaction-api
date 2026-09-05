@@ -22,10 +22,11 @@ This page explains the main tools used in the Bank Transaction API and how they 
 
 ## Testing and automation
 
-- **Pytest**: automated Python testing framework.
+- **Pytest**: automated Python testing framework used by the 11-test application suite.
 - **HTTPX / FastAPI TestClient**: sends simulated HTTP requests to the FastAPI application during tests.
-- **`.github/workflows/tests.yml`**: GitHub Actions CI workflow that installs dependencies and runs the Pytest suite on every push and pull request to `main`.
-- **`.github/workflows/live-smoke.yml`**: checks that the public Render landing page, health endpoint, Swagger UI and OpenAPI contract are reachable.
+- **`.github/workflows/tests.yml`**: CI workflow that installs Python 3.12 dependencies, compiles the app, runs Pytest and builds the Docker image.
+- **`.github/workflows/live-smoke.yml`**: post-deployment workflow that runs a real end-to-end test against Render.
+- **`scripts/live_smoke.py`**: verifies landing page, health, Swagger, OpenAPI, registration, login, JWT authentication, account creation, transfer balances and transaction history on the public deployment.
 
 ## Packaging and deployment
 
@@ -34,7 +35,7 @@ This page explains the main tools used in the Bank Transaction API and how they 
 - **`render.yaml`**: Render Infrastructure-as-Code configuration defining the free hosted web service, Python version, build command, start command, health check and environment variables.
 - **Render**: hosts the public demonstration service.
 
-## End-to-end flow
+## End-to-end application flow
 
 ```text
 VS Code
@@ -55,12 +56,11 @@ Quality and delivery flow:
 Code change
   -> Git commit
   -> GitHub push
-  -> GitHub Actions CI
-  -> Pytest
+  -> CI compile/test/Docker build
   -> Render deployment
-  -> Live smoke test
+  -> live authenticated E2E smoke test
 ```
 
 ## Interview summary
 
-> I use VS Code to develop the Python service. FastAPI exposes the REST endpoints, Pydantic validates requests, SQLAlchemy communicates with SQLite, PyJWT protects authenticated routes, and Uvicorn runs the service. Pytest and HTTPX provide automated API testing, GitHub Actions performs CI and live smoke checks, and Render deploys the application from `render.yaml`.
+> I use VS Code to develop the Python service. FastAPI exposes the REST endpoints, Pydantic validates requests, SQLAlchemy communicates with SQLite, PyJWT protects authenticated routes, and Uvicorn runs the service. Pytest and HTTPX provide automated API testing, GitHub Actions performs CI and Docker verification, Render deploys the application from `render.yaml`, and a separate live smoke workflow proves that registration, authentication, account creation and transfers work on the hosted service.
