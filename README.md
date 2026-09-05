@@ -22,7 +22,7 @@ The dashboard is a real client of the same FastAPI backend. Register or log in, 
 
 The `/walkthrough` page explains the complete development stack from `git clone`, VS Code and `venv` through FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and `render.yaml`.
 
-The demo runs on Render's free web-service tier. A first request after inactivity can take longer while the service wakes up. SQLite is intentionally used for disposable portfolio data, so records can reset after a restart or redeploy.
+The deployment uses SQLite for disposable portfolio data, so records can reset after a restart or redeploy.
 
 ## Dashboard features
 
@@ -39,12 +39,12 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 
 ## Documentation
 
-- **Live [`/walkthrough`](https://samuel-kimani-bank-api-demo.onrender.com/walkthrough)** - browser-based technical guide showing how the project is built from scratch.
-- [`docs/INTERVIEW_DEMO.md`](docs/INTERVIEW_DEMO.md) - focused panel walkthrough and interview talking points.
-- [`docs/TECH_STACK.md`](docs/TECH_STACK.md) - explanation of the frontend, FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and Render.
-- [`docs/BUILD_FROM_SCRATCH.md`](docs/BUILD_FROM_SCRATCH.md) - step-by-step setup from `git clone` through deployment.
-- [`docs/HOSTING.md`](docs/HOSTING.md) - Render configuration, deployment flow and live verification.
-- [`scripts/live_smoke.py`](scripts/live_smoke.py) - automated end-to-end verification against the public Render service.
+- **Live [`/walkthrough`](https://samuel-kimani-bank-api-demo.onrender.com/walkthrough)**, browser-based technical guide showing how the project is built from scratch.
+- [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md), focused portfolio presentation guide.
+- [`docs/TECH_STACK.md`](docs/TECH_STACK.md), explanation of the frontend, FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and Render.
+- [`docs/BUILD_FROM_SCRATCH.md`](docs/BUILD_FROM_SCRATCH.md), step-by-step setup from `git clone` through deployment.
+- [`docs/HOSTING.md`](docs/HOSTING.md), Render configuration, deployment flow and live verification.
+- [`scripts/live_smoke.py`](scripts/live_smoke.py), automated end-to-end verification against the public Render service.
 
 ## What this project demonstrates
 
@@ -127,6 +127,11 @@ bank-transaction-api/
 |       |-- walkthrough.html # Build From Scratch Walkthrough
 |       `-- walkthrough.css  # Walkthrough page styling
 |
+|-- docs/
+|   |-- DEMO_GUIDE.md
+|   |-- BUILD_FROM_SCRATCH.md
+|   |-- TECH_STACK.md
+|   `-- HOSTING.md
 |-- tests/test_api.py        # API, dashboard and walkthrough tests
 |-- scripts/live_smoke.py    # Hosted end-to-end verification
 |-- .github/workflows/       # CI and live smoke workflows
@@ -170,9 +175,7 @@ Open:
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - Health endpoint: `http://127.0.0.1:8000/health`
 
-## Fast live demo flow
-
-The easiest portfolio demonstration is:
+## Fast portfolio demo flow
 
 ```text
 Open live dashboard
@@ -187,7 +190,7 @@ Open live dashboard
   -> Open GitHub Actions to show CI and live verification
 ```
 
-You can still demonstrate the API directly through Swagger or curl.
+You can also demonstrate the API directly through Swagger or curl.
 
 ### Register
 
@@ -217,22 +220,9 @@ The suite covers dashboard/static assets, the live walkthrough route and assets,
 
 ## CI and deployment verification
 
-### CI workflow
+`.github/workflows/tests.yml` performs repository checkout, Python setup, dependency installation, application compilation, Pytest execution and Docker image build verification.
 
-`.github/workflows/tests.yml` performs:
-
-```text
-Checkout repository
-  -> Python 3.12
-  -> install dependencies
-  -> compile application
-  -> run Pytest
-  -> build Docker image
-```
-
-### Live end-to-end smoke workflow
-
-`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the public Render deployment. It verifies the hosted application, authentication, database writes and core banking transfer flow.
+`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the public Render deployment to verify the hosted application, authentication, database writes and core banking transfer flow.
 
 ## Docker
 
@@ -253,7 +243,7 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 **Same-origin frontend integration** keeps the portfolio deployment simple while still demonstrating a real browser client consuming protected APIs.
 
-**Live technical walkthrough** makes the project useful not only as a working demo but also as an explanation of the development, testing and deployment stack.
+**Live technical walkthrough** explains the development, testing and deployment stack directly from the running application.
 
 **Environment configuration** separates code from deployment-specific settings and secrets.
 
@@ -265,7 +255,7 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 A production version would add PostgreSQL, Alembic migrations, structured audit logs, rate limiting, refresh-token strategy, managed secrets, monitoring, distributed tracing, database transaction isolation, row-level locking, stronger frontend session controls and integration with a core banking or payment platform.
 
-## Interview talking points
+## Technical talking points
 
 1. Translating financial requirements into API contracts and validation rules.
 2. Building a browser dashboard that consumes the protected REST API rather than duplicating business logic.
