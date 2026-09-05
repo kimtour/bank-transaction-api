@@ -36,23 +36,31 @@ Push to main
   -> CI passes
   -> Render auto-deploys
   -> Render checks /health
-  -> GitHub live smoke workflow verifies the public service
+  -> live end-to-end smoke test verifies the public service
 ```
 
-## Live smoke verification
+## Live end-to-end verification
 
-`.github/workflows/live-smoke.yml` runs from GitHub Actions and independently verifies:
+`.github/workflows/live-smoke.yml` checks out the repository and runs `scripts/live_smoke.py` against the public Render URL.
 
-1. `/health` returns JSON with `status=ok` and the expected service name.
-2. `/` contains the Bank Transaction API landing page.
+The script verifies:
+
+1. `/health` returns `status=ok` and the expected service name.
+2. `/` returns the Bank Transaction API landing page.
 3. `/docs` serves Swagger UI.
-4. `/openapi.json` contains the expected core API paths.
+4. `/openapi.json` exposes the expected core API paths.
+5. A unique temporary user can register.
+6. The user can log in and obtain a JWT access token.
+7. Two KES accounts can be created.
+8. KES 750 can be transferred between them.
+9. Source and destination balances are updated correctly.
+10. The transaction appears in transaction history.
 
-This makes hosting verification repeatable instead of relying only on a manual browser check.
+This verifies the running hosted application, authentication, database writes and core banking flow, not only page availability.
 
 ## Free-tier behavior
 
-Render free web services can sleep after inactivity. The smoke workflow uses retries so a cold start has time to wake the service before declaring a failure.
+Render free web services can sleep after inactivity. The smoke script contains retry logic so a cold start has time to wake the service before it declares a failure.
 
 The free service filesystem is ephemeral. SQLite is intentionally used only for this interview/demo deployment, so records can reset after a restart or redeploy.
 
