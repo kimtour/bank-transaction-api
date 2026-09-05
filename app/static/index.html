@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live Bank Transaction API portfolio dashboard built with FastAPI.">
+  <title>Bank Transaction System | Samuel Mutua Kimani</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">BK</span>
+      <span>
+        <strong>Bank Transaction System</strong>
+        <small>FastAPI Portfolio Application</small>
+      </span>
+    </a>
+    <nav class="top-actions">
+      <span id="apiStatus" class="status-pill"><span class="status-dot"></span>Checking API</span>
+      <a href="/docs" target="_blank" rel="noreferrer">API Docs</a>
+      <a href="https://github.com/kimtour/bank-transaction-api" target="_blank" rel="noreferrer">GitHub</a>
+      <button id="logoutButton" class="button ghost hidden" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="authView" class="auth-layout">
+      <div class="hero-panel">
+        <span class="eyebrow">LIVE BANKING API DEMO</span>
+        <h1>Move money through a real, tested banking API.</h1>
+        <p>Create accounts, deposit or withdraw funds, transfer between accounts and inspect transaction history. Every action on this page calls the live FastAPI backend.</p>
+        <div class="hero-points">
+          <span>JWT authentication</span>
+          <span>Transaction validation</span>
+          <span>CI/CD tested</span>
+          <span>Docker ready</span>
+        </div>
+        <div class="architecture-card">
+          <strong>Application flow</strong>
+          <p>Browser dashboard → FastAPI → Service layer → SQLAlchemy → SQLite</p>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" data-auth-tab="login" type="button">Log in</button>
+          <button class="auth-tab" data-auth-tab="register" type="button">Create account</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <label>Username<input id="loginUsername" name="username" autocomplete="username" minlength="3" required placeholder="samuel"></label>
+          <label>Password<input id="loginPassword" name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Minimum 8 characters"></label>
+          <button class="button primary full" type="submit">Log in to dashboard</button>
+        </form>
+
+        <form id="registerForm" class="auth-form hidden">
+          <label>Username<input id="registerUsername" name="username" autocomplete="username" minlength="3" maxlength="80" required placeholder="samuel"></label>
+          <label>Password<input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Create a secure password"></label>
+          <button class="button primary full" type="submit">Register and log in</button>
+        </form>
+
+        <p class="auth-note">Demo data is disposable because this free portfolio deployment uses SQLite on Render.</p>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="dashboard hidden">
+      <div class="welcome-row">
+        <div>
+          <span class="eyebrow">BANKING DASHBOARD</span>
+          <h1>Account overview</h1>
+          <p id="welcomeText">Authenticated session</p>
+        </div>
+        <button id="refreshButton" class="button secondary" type="button">Refresh data</button>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card"><span>KES balance</span><strong id="totalBalance">KES 0.00</strong><small>Across your KES accounts</small></article>
+        <article class="stat-card"><span>Accounts</span><strong id="accountCount">0</strong><small>Authenticated user's accounts</small></article>
+        <article class="stat-card"><span>Transactions</span><strong id="transactionCount">0</strong><small>Recent activity</small></article>
+        <article class="stat-card"><span>API status</span><strong id="dashboardStatus">Online</strong><small>Live Render service</small></article>
+      </div>
+
+      <div class="section-heading">
+        <div><span class="eyebrow">ACCOUNTS</span><h2>Your bank accounts</h2></div>
+        <button class="button primary" type="button" data-open-modal="createAccountModal">+ Create account</button>
+      </div>
+      <div id="accountsGrid" class="accounts-grid"></div>
+      <div id="emptyAccounts" class="empty-state hidden">
+        <strong>No accounts yet</strong>
+        <p>Create your first account to start the live banking demo.</p>
+      </div>
+
+      <div class="operations-grid">
+        <article class="panel">
+          <div class="panel-heading"><span class="eyebrow">MONEY OPERATIONS</span><h2>Deposit or withdraw</h2></div>
+          <form id="moneyForm" class="form-grid">
+            <label>Account<select id="moneyAccount" required></select></label>
+            <label>Operation<select id="moneyOperation" required><option value="deposit">Deposit</option><option value="withdraw">Withdraw</option></select></label>
+            <label>Amount (KES)<input id="moneyAmount" type="number" min="0.01" step="0.01" required placeholder="5000.00"></label>
+            <label>Reference<input id="moneyReference" minlength="4" maxlength="64" required placeholder="DEP-001"></label>
+            <label class="span-2">Description<input id="moneyDescription" maxlength="255" placeholder="Optional transaction note"></label>
+            <button class="button primary span-2" type="submit">Process transaction</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading"><span class="eyebrow">TRANSFER</span><h2>Move funds</h2></div>
+          <form id="transferForm" class="form-grid">
+            <label>From<select id="transferSource" required></select></label>
+            <label>Destination account<input id="transferDestination" required placeholder="10XXXXXXXX"></label>
+            <label>Amount<input id="transferAmount" type="number" min="0.01" step="0.01" required placeholder="2500.00"></label>
+            <label>Reference<input id="transferReference" minlength="4" maxlength="64" required placeholder="TRF-001"></label>
+            <label class="span-2">Description<input id="transferDescription" maxlength="255" placeholder="Optional transfer note"></label>
+            <button class="button primary span-2" type="submit">Transfer funds</button>
+          </form>
+        </article>
+      </div>
+
+      <article class="panel transaction-panel">
+        <div class="panel-heading transaction-heading">
+          <div><span class="eyebrow">AUDIT TRAIL</span><h2>Recent transactions</h2></div>
+          <span class="muted">Latest 50 records</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reference</th><th>Type</th><th>Amount</th><th>Status</th><th>Description</th><th>Date</th></tr></thead>
+            <tbody id="transactionsBody"></tbody>
+          </table>
+        </div>
+        <div id="emptyTransactions" class="empty-state compact hidden"><p>No transactions yet.</p></div>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="createAccountModal" class="modal">
+    <form id="createAccountForm" method="dialog">
+      <div class="modal-heading"><div><span class="eyebrow">NEW ACCOUNT</span><h2>Create bank account</h2></div><button class="icon-button" value="cancel" formmethod="dialog" aria-label="Close">×</button></div>
+      <label>Account name<input id="accountName" minlength="2" maxlength="120" required placeholder="Samuel Current Account"></label>
+      <label>Opening balance<input id="openingBalance" type="number" min="0" step="0.01" value="0.00" required></label>
+      <label>Currency<select id="accountCurrency"><option value="KES">KES</option><option value="USD">USD</option><option value="EUR">EUR</option></select></label>
+      <button class="button primary full" type="submit">Create account</button>
+    </form>
+  </dialog>
+
+  <footer>
+    <span>Portfolio project by Samuel Mutua Kimani</span>
+    <span>FastAPI · SQLAlchemy · JWT · Pytest · GitHub Actions · Render</span>
+  </footer>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
