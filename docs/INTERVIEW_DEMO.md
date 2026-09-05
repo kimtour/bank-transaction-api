@@ -1,128 +1,183 @@
 # Interview Demo Guide
 
-Use this page as a 3 to 5 minute walkthrough during the panel interview.
+Use this as a focused 3 to 5 minute walkthrough.
 
-## 1. Open the repository
-
-Start with the README and explain the goal in one sentence:
-
-> I built a banking transaction API to demonstrate how I translate financial business rules into a secure, testable REST service with CI/CD and cloud deployment.
-
-## 2. Open the live API
-
-Use the hosted Swagger interface:
+## 1. Open the live Swagger API
 
 https://samuel-kimani-bank-api-demo.onrender.com/docs
 
-Also keep these open:
+Opening line:
 
-- Landing page: https://samuel-kimani-bank-api-demo.onrender.com/
-- Health check: https://samuel-kimani-bank-api-demo.onrender.com/health
+> I built a banking transaction API that translates financial business rules into a secure, testable REST service with automated CI/CD and a live cloud deployment.
 
-Show these endpoints:
+## 2. Show the health endpoint
+
+Open:
+
+https://samuel-kimani-bank-api-demo.onrender.com/health
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "service": "bank-transaction-api",
+  "version": "1.0.0"
+}
+```
+
+Explain that Render also uses `/health` to determine whether the service started correctly.
+
+## 3. Show the API surface
+
+In Swagger, point out:
 
 - `POST /auth/register`
 - `POST /auth/login`
 - `POST /accounts`
+- `GET /accounts`
+- `GET /accounts/{account_number}`
 - `POST /accounts/{account_number}/deposit`
 - `POST /accounts/{account_number}/withdraw`
 - `POST /transfers`
 - `GET /transactions`
 - `GET /health`
 
-## 3. Explain the business rules
+## 4. Run a live transaction flow
+
+1. Register a new demo user.
+2. Log in and copy the returned JWT access token.
+3. Click **Authorize** in Swagger and paste the token.
+4. Create two KES accounts.
+5. Transfer KES 5,000 between them.
+6. List accounts to show the new balances.
+7. Open transaction history to show the recorded transfer.
+8. Attempt an excessive transfer and show the `Insufficient balance` validation.
+9. Reuse a transaction reference and show duplicate-reference protection.
+
+## 5. Explain the business rules
 
 Highlight these controls:
 
-- A transaction reference must be unique.
-- A withdrawal cannot exceed the available balance.
-- A transfer cannot use the same account as both source and destination.
+- Transaction references must be unique.
+- Deposits and transfers must use positive amounts.
+- Withdrawals and transfers cannot exceed the available balance.
+- Source and destination accounts must differ.
 - Transfer currencies must match.
-- The source account must belong to the authenticated user.
-- Protected endpoints require a JWT bearer token.
+- Account lookup is restricted to the authenticated owner.
+- Protected endpoints require a valid JWT bearer token.
 
-## 4. Show the architecture
-
-Explain the flow:
+## 6. Show the architecture
 
 ```text
-Browser / Client
+Browser / Swagger
   -> Render Web Service
+  -> Uvicorn
   -> FastAPI route
+  -> Pydantic validation
   -> JWT authentication
-  -> service layer
+  -> service-layer business rules
   -> SQLAlchemy ORM
-  -> SQLite database
+  -> SQLite demo database
 ```
 
-Explain that SQLite keeps the demo easy to run, while the database URL can be changed to PostgreSQL for production.
+Explain that SQLite keeps the demo lightweight. A production environment would use PostgreSQL or another managed persistent database.
 
-## 5. Show automated tests
+## 7. Show automated tests
 
-Open `tests/test_api.py` and point out coverage for:
+Open `tests/test_api.py`.
+
+The current suite covers:
 
 - health endpoint
 - registration and login
-- protected routes
-- account creation
+- authenticated account creation
+- deposits
 - duplicate transaction references
 - insufficient balance
-- transfers
+- transfers and resulting balances
 - transaction history
+- missing authentication
+- invalid JWT tokens
+- zero-value request validation
+- same-account transfer rejection
+- currency mismatch rejection
+- account ownership enforcement
 
-## 6. Show CI/CD
+Run locally with:
 
-Open the GitHub Actions tab and show the green CI workflow.
+```bash
+pytest -q
+```
 
-Explain:
+## 8. Show CI/CD
 
-> Every push and pull request to main runs the automated test suite. Render is configured to deploy after successful checks, so the same repository demonstrates development, testing and deployment in one flow.
+Open:
 
-## 7. Show Docker and Infrastructure as Code
+https://github.com/kimtour/bank-transaction-api/actions
 
-Point to:
+There are two important workflows:
 
-- `Dockerfile`
-- `.dockerignore`
-- `render.yaml`
+### CI
 
-Explain that `render.yaml` keeps the cloud service configuration version-controlled.
+`.github/workflows/tests.yml`:
 
-## Live demo sequence
+- checks out the repository
+- installs Python 3.12
+- installs dependencies
+- compiles the application
+- runs Pytest
+- builds the Docker image
 
-1. Open `/health`.
-2. Open `/docs`.
-3. Register a new user.
-4. Log in.
-5. Copy the JWT token and click **Authorize**.
-6. Create two KES accounts.
-7. Transfer KES 5,000 between them.
-8. Open `GET /accounts` and show the changed balances.
-9. Open `GET /transactions` and show the transfer record.
-10. Try a transfer that exceeds the available balance and show the validation error.
+### Live Smoke Test
 
-## Questions the panel may ask
+`.github/workflows/live-smoke.yml` verifies the deployed Render service by checking:
+
+- `/health`
+- `/`
+- `/docs`
+- `/openapi.json`
+
+This demonstrates both application testing and post-deployment verification.
+
+## 9. Show deployment configuration
+
+Open `render.yaml` and explain:
+
+> The deployment is defined as Infrastructure as Code. Render uses the file to select Python 3.12, install dependencies, start Uvicorn, configure environment variables and check the health endpoint.
+
+## Likely panel questions
 
 ### Why FastAPI?
 
-FastAPI provides typed request validation, automatic OpenAPI documentation and a clean structure for Python API services.
+FastAPI gives typed request validation, automatic OpenAPI documentation, strong Python developer ergonomics and a clean structure for REST APIs.
 
-### How would you make this production ready?
+### Why Pydantic?
 
-I would use PostgreSQL, Alembic migrations, a managed secrets store, structured logs, monitoring, rate limiting, stronger password-policy controls, database-level transaction isolation and row locking for concurrent balance updates.
+Pydantic rejects invalid request data before it reaches the banking business logic, for example zero or negative monetary amounts.
+
+### Why SQLAlchemy?
+
+SQLAlchemy separates Python application code from database-specific SQL and provides an ORM layer that can move from SQLite to PostgreSQL with limited application-level change.
 
 ### How do you prevent duplicate transactions?
 
-Each transaction uses a unique reference. The service checks the reference before processing, and the database model also enforces uniqueness.
+Each transaction has a unique reference. The service checks it before processing and the database also enforces uniqueness.
 
-### How would you integrate this with another bank or M-Pesa?
+### What happens if two transfers hit the same account simultaneously?
 
-I would introduce an integration adapter or payment service that calls the external API, stores the external transaction ID, handles callbacks or webhooks, retries transient failures safely and reconciles final transaction states.
+The demo uses SQLite and is not designed for high-concurrency banking workloads. In production I would use database transactions, appropriate isolation and row-level locking or another concurrency-control strategy to prevent lost updates and double spending.
 
-### What happens if two transfers hit the same account at the same time?
+### How would you integrate M-Pesa or another bank?
 
-The demo uses SQLite, so production concurrency controls are intentionally outside its scope. With PostgreSQL I would use database transactions and row-level locking, or another concurrency strategy, to prevent lost updates and double spending.
+I would add an integration adapter or payment service that calls the external API, stores provider transaction IDs, handles callbacks/webhooks, retries transient failures safely and reconciles final states.
 
 ## Closing statement
 
-> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, implement business rules, secure access, test failure cases, automate quality checks through CI/CD and deploy the service to the cloud.
+> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, validate input, implement financial rules, secure access, test success and failure cases, automate CI, package the service and verify the live deployment.
+
+## Supporting documentation
+
+- [`TECH_STACK.md`](TECH_STACK.md)
+- [`BUILD_FROM_SCRATCH.md`](BUILD_FROM_SCRATCH.md)
+- [`HOSTING.md`](HOSTING.md)
