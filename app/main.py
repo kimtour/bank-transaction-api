@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,12 +14,19 @@ from .services import deposit, generate_account_number, get_owned_account, trans
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Bank Transaction API", version="1.0.0", description="A secure banking API demonstrating account management, transfers, validation, testing and CI/CD.")
+app = FastAPI(
+    title="Bank Transaction API",
+    version="1.0.0",
+    description="A secure banking API demonstrating account management, transfers, validation, testing and CI/CD.",
+)
+
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+@app.get("/", response_class=FileResponse, include_in_schema=False)
 def home():
-    return """<html><head><title>Bank Transaction API</title><style>body{font-family:Arial;max-width:850px;margin:60px auto;padding:0 20px;color:#1a1f36}a{color:#9a741d}code{background:#f4f4f4;padding:3px 6px}</style></head><body><h1>Bank Transaction API</h1><p>FastAPI banking service with JWT authentication, accounts, deposits, withdrawals, transfers, transaction history and automated tests.</p><p><a href='/docs'>Open Swagger API Documentation</a> | <a href='/health'>Health Check</a></p><p>Start with <code>POST /auth/register</code>, then <code>POST /auth/login</code>.</p></body></html>"""
+    return FileResponse(static_dir / "index.html")
 
 
 @app.get("/health", tags=["System"])
