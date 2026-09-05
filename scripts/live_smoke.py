@@ -62,8 +62,20 @@ def main():
     assert health["service"] == "bank-transaction-api"
 
     status, landing = request("GET", "/")
-    expect_status(status, 200, "landing page")
-    assert "Bank Transaction API" in landing
+    expect_status(status, 200, "dashboard")
+    assert "Bank Transaction System" in landing
+    assert "live FastAPI backend" in landing
+    assert "/static/styles.css" in landing
+    assert "/static/app.js" in landing
+
+    status, styles = request("GET", "/static/styles.css")
+    expect_status(status, 200, "dashboard styles")
+    assert ".account-card" in styles
+
+    status, script = request("GET", "/static/app.js")
+    expect_status(status, 200, "dashboard script")
+    assert 'api("/accounts")' in script
+    assert 'api("/transfers"' in script
 
     status, docs = request("GET", "/docs")
     expect_status(status, 200, "Swagger UI")
@@ -144,7 +156,7 @@ def main():
     print("LIVE E2E SMOKE TEST PASSED")
     print(f"Registered user: {username}")
     print(f"Verified transfer reference: {reference}")
-    print("Verified landing page, health, Swagger, OpenAPI, auth, accounts, transfer, balances and history.")
+    print("Verified dashboard assets, health, Swagger, OpenAPI, auth, accounts, transfer, balances and history.")
 
 
 if __name__ == "__main__":
