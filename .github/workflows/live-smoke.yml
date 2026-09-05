@@ -1,23 +1,30 @@
 name: Live Smoke Test
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
   workflow_dispatch:
 
 jobs:
   smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     env:
       BASE_URL: https://samuel-kimani-bank-api-demo.onrender.com
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Allow Render deployment to start
+        run: sleep 30
 
       - name: Run live end-to-end verification
         run: python scripts/live_smoke.py
