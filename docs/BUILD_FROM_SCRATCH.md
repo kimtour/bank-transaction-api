@@ -1,6 +1,6 @@
-# Build the Bank Transaction API from Scratch
+# Build the Bank Transaction System from Scratch
 
-This guide shows the development sequence from an empty computer folder to the hosted API.
+This guide shows the development sequence from an empty computer folder to the hosted full-stack banking application.
 
 ## 1. Clone the repository
 
@@ -32,7 +32,7 @@ python -m pip install -r requirements.txt  # Install all pinned application and 
 
 Key packages:
 
-- `fastapi`: creates REST API endpoints.
+- `fastapi`: creates REST API endpoints and serves the dashboard.
 - `uvicorn`: runs the FastAPI application as a web server.
 - `sqlalchemy`: maps Python models to relational database tables and queries.
 - `pydantic`: validates incoming and outgoing API data.
@@ -43,61 +43,102 @@ Key packages:
 ## 5. Understand the project structure
 
 ```text
-app/main.py                   # FastAPI application and HTTP routes.
+app/main.py                   # FastAPI application, API routes and dashboard hosting.
 app/models.py                 # SQLAlchemy database tables.
 app/schemas.py                # Pydantic request and response validation models.
 app/services.py               # Banking business rules such as transfer validation.
 app/security.py               # Password hashing and JWT authentication.
 app/database.py               # SQLAlchemy engine and database sessions.
 app/config.py                 # Environment-based configuration.
-tests/test_api.py             # 11 automated API test cases.
+app/static/index.html         # Banking dashboard HTML.
+app/static/styles.css         # Responsive dashboard styling.
+app/static/app.js             # Browser logic that calls the FastAPI endpoints.
+tests/test_api.py             # 12 automated backend and dashboard test cases.
 scripts/live_smoke.py         # End-to-end verification against the public Render service.
 .github/workflows/tests.yml   # CI compilation, tests and Docker build.
 .github/workflows/live-smoke.yml  # Hosted end-to-end smoke workflow.
 render.yaml                   # Render deployment configuration.
 ```
 
-## 6. Run the API locally
+## 6. Build the backend API first
+
+Implement the backend in this order:
+
+```text
+Database connection
+  -> SQLAlchemy models
+  -> Pydantic schemas
+  -> JWT security
+  -> banking service rules
+  -> FastAPI routes
+```
+
+Keep financial rules such as insufficient balance, duplicate references and currency matching in the service layer rather than in the browser.
+
+## 7. Add the browser dashboard
+
+Create:
+
+```text
+app/static/index.html   # Forms, account cards and transaction table.
+app/static/styles.css   # Layout and responsive styling.
+app/static/app.js       # fetch() calls to the protected REST API.
+```
+
+`app/main.py` mounts `/static` and serves `index.html` at `/`.
+
+The JavaScript application:
+
+```text
+registers/logs in a user
+  -> stores the demo JWT
+  -> calls /accounts
+  -> calls deposit/withdraw endpoints
+  -> calls /transfers
+  -> refreshes balances and transaction history
+```
+
+## 8. Run the full application locally
 
 ```bash
-cp .env.example .env                 # Create a local environment configuration file.
+cp .env.example .env                    # Create a local environment configuration file.
 python -m uvicorn app.main:app --reload  # Start FastAPI and reload after source-code changes.
 ```
 
 Open:
 
-- `http://127.0.0.1:8000/`
-- `http://127.0.0.1:8000/docs`
-- `http://127.0.0.1:8000/health`
+- Dashboard: `http://127.0.0.1:8000/`
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- Health endpoint: `http://127.0.0.1:8000/health`
 
-## 7. Run automated tests
-
-```bash
-pytest -q  # Run the automated API test suite with compact output.
-```
-
-The suite validates authentication, account creation, deposits, transfers, transaction history, insufficient funds, duplicate references, invalid tokens, invalid amounts, account ownership, same-account transfers and currency mismatch handling.
-
-## 8. Build the Docker image
+## 9. Run automated tests
 
 ```bash
-docker build -t bank-transaction-api .  # Build the Docker image using the project's Dockerfile.
+pytest -q  # Run the automated backend and dashboard test suite with compact output.
 ```
 
-The CI workflow performs this build automatically as well, which verifies that the container packaging remains valid after changes.
+The suite validates dashboard asset delivery, authentication, account creation, deposits, transfers, transaction history, insufficient funds, duplicate references, invalid tokens, invalid amounts, account ownership, same-account transfers and currency mismatch handling.
 
-## 9. Commit and push changes
+## 10. Build the Docker image
 
 ```bash
-git status                              # Show files that have changed.
-git add .                               # Stage all project changes for a commit.
-git commit -m "Update banking API"     # Save a versioned snapshot of the staged changes.
-git push origin main                    # Upload the new commit to GitHub's main branch.
+docker build -t bank-transaction-api .  # Package the backend and static frontend into a Docker image.
 ```
 
-## 10. Continuous Integration
+The CI workflow performs this build automatically as well.
 
-`.github/workflows/tests.yml` automatically:
+## 11. Commit and push changes
+
+```bash
+git status                               # Show files that have changed.
+git add .                                # Stage all project changes for a commit.
+git commit -m "Update banking system"   # Save a versioned snapshot of the staged changes.
+git push origin main                     # Upload the new commit to GitHub's main branch.
+```
+
+## 12. Continuous Integration
+
+`.github/workflows/tests.yml` automatically performs:
 
 ```text
 Push code
@@ -110,7 +151,7 @@ Push code
   -> report success or failure
 ```
 
-## 11. Cloud deployment
+## 13. Cloud deployment
 
 `render.yaml` tells Render how to deploy the application:
 
@@ -119,28 +160,30 @@ GitHub main branch
   -> Render reads render.yaml
   -> install Python dependencies
   -> start Uvicorn
+  -> serve dashboard and API
   -> check /health
   -> expose public URL
 ```
 
 Live URLs:
 
-- Landing page: https://samuel-kimani-bank-api-demo.onrender.com/
+- Dashboard: https://samuel-kimani-bank-api-demo.onrender.com/
 - Swagger UI: https://samuel-kimani-bank-api-demo.onrender.com/docs
 - Health: https://samuel-kimani-bank-api-demo.onrender.com/health
 
-## 12. Verify the actual hosted banking flow
+## 14. Verify the actual hosted banking flow
 
 `.github/workflows/live-smoke.yml` runs:
 
 ```bash
-python scripts/live_smoke.py  # Test the deployed Render API end to end.
+python scripts/live_smoke.py  # Test the deployed Render application end to end.
 ```
 
 The script automatically:
 
 ```text
-checks /health, /, /docs and /openapi.json
+checks dashboard HTML, CSS and JavaScript
+  -> checks /health, /docs and /openapi.json
   -> registers a unique temporary user
   -> logs in and obtains JWT
   -> creates two KES accounts
@@ -149,7 +192,7 @@ checks /health, /, /docs and /openapi.json
   -> verifies transaction history
 ```
 
-This confirms that the real hosted API can execute the core authenticated banking workflow, not only that the web server is reachable.
+This confirms that the real hosted full-stack application works, not only that the web server is reachable.
 
 ## Development lifecycle summary
 
@@ -157,8 +200,9 @@ This confirms that the real hosted API can execute the core authenticated bankin
 Requirements
   -> API/database design
   -> implement models and schemas
-  -> implement business rules
+  -> implement banking business rules
   -> add authentication
+  -> build browser dashboard
   -> test locally
   -> write automated tests
   -> build Docker image
