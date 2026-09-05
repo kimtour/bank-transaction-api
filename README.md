@@ -25,6 +25,7 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 - [`docs/TECH_STACK.md`](docs/TECH_STACK.md) - explanation of FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and Render.
 - [`docs/BUILD_FROM_SCRATCH.md`](docs/BUILD_FROM_SCRATCH.md) - step-by-step setup from `git clone` through deployment.
 - [`docs/HOSTING.md`](docs/HOSTING.md) - Render configuration, deployment flow and live verification.
+- [`scripts/live_smoke.py`](scripts/live_smoke.py) - automated end-to-end verification against the public Render service.
 
 ## What this project demonstrates
 
@@ -40,7 +41,7 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 - Transaction history and audit-friendly references
 - 11 automated API test cases with Pytest
 - GitHub Actions CI on pushes and pull requests
-- Live post-deployment smoke tests
+- Full live authenticated post-deployment verification
 - Docker image build verification
 - Environment-based configuration
 - Render Infrastructure as Code through `render.yaml`
@@ -160,18 +161,22 @@ Checkout repository
   -> build Docker image
 ```
 
-### Live smoke workflow
+### Live end-to-end smoke workflow
 
-`.github/workflows/live-smoke.yml` independently checks the hosted Render service:
+`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the public Render deployment. It verifies:
 
 ```text
-/health
-/
-/docs
-/openapi.json
+Landing page and /health
+  -> Swagger and OpenAPI contract
+  -> register a unique temporary user
+  -> login and obtain JWT
+  -> create two KES accounts
+  -> transfer KES 750
+  -> verify resulting balances
+  -> verify transaction history
 ```
 
-The OpenAPI smoke check also confirms that core paths such as `/auth/register`, `/auth/login`, `/accounts`, `/transfers` and `/transactions` are published by the live service.
+This means the repository checks not only whether pages are reachable, but whether the deployed authentication, database writes and core banking transfer flow actually work.
 
 ## Docker
 
@@ -194,7 +199,7 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 **Infrastructure as Code** keeps the Render deployment configuration version-controlled in `render.yaml`.
 
-**Post-deployment smoke testing** verifies the public service after code changes instead of relying only on local tests.
+**Post-deployment end-to-end testing** proves the hosted authentication, account creation, transfer and transaction-history flow after code changes.
 
 ## Production improvements
 
@@ -208,7 +213,7 @@ A production version would add PostgreSQL, Alembic migrations, structured audit 
 4. Testing both success paths and failure cases.
 5. Moving compilation, tests and Docker verification into CI.
 6. Defining deployment with version-controlled Infrastructure as Code.
-7. Verifying the public deployment with an independent live smoke workflow.
+7. Verifying the hosted system with an authenticated end-to-end smoke test.
 8. Extending the service to M-Pesa, core banking systems or other payment channels.
 
 ## Author
