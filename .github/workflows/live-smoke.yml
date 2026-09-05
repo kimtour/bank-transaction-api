@@ -11,52 +11,13 @@ jobs:
     env:
       BASE_URL: https://samuel-kimani-bank-api-demo.onrender.com
     steps:
-      - name: Check health endpoint
-        run: |
-          curl --fail --show-error --location \
-            --retry 8 --retry-delay 10 --retry-all-errors --max-time 120 \
-            "$BASE_URL/health" -o health.json
-          python - <<'PY'
-          import json
-          with open("health.json") as file:
-              payload = json.load(file)
-          assert payload["status"] == "ok"
-          assert payload["service"] == "bank-transaction-api"
-          print(payload)
-          PY
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - name: Check landing page
-        run: |
-          curl --fail --show-error --location \
-            --retry 5 --retry-delay 5 --retry-all-errors --max-time 60 \
-            "$BASE_URL/" -o landing.html
-          grep -q "Bank Transaction API" landing.html
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Check Swagger documentation
-        run: |
-          curl --fail --show-error --location \
-            --retry 5 --retry-delay 5 --retry-all-errors --max-time 60 \
-            "$BASE_URL/docs" -o docs.html
-          grep -q "Swagger UI" docs.html
-
-      - name: Check OpenAPI contract
-        run: |
-          curl --fail --show-error --location \
-            --retry 5 --retry-delay 5 --retry-all-errors --max-time 60 \
-            "$BASE_URL/openapi.json" -o openapi.json
-          python - <<'PY'
-          import json
-          with open("openapi.json") as file:
-              spec = json.load(file)
-          required_paths = {
-              "/health",
-              "/auth/register",
-              "/auth/login",
-              "/accounts",
-              "/transfers",
-              "/transactions",
-          }
-          missing = sorted(required_paths - set(spec["paths"]))
-          assert not missing, f"Missing API paths: {missing}"
-          print("Verified API paths:", sorted(required_paths))
-          PY
+      - name: Run live end-to-end verification
+        run: python scripts/live_smoke.py
