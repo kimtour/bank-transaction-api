@@ -1,36 +1,57 @@
 # Interview Demo Guide
 
-Use this as a focused 3 to 5 minute walkthrough.
+Use this as a focused 3 to 5 minute walkthrough of the full-stack banking application.
 
-## 1. Open the live Swagger API
+## 1. Open the live banking dashboard
 
-https://samuel-kimani-bank-api-demo.onrender.com/docs
+https://samuel-kimani-bank-api-demo.onrender.com/
 
 Opening line:
 
-> I built a banking transaction API that translates financial business rules into a secure, testable REST service with automated CI/CD and a live cloud deployment.
+> I built a full-stack banking transaction system. The browser dashboard is connected to a secure FastAPI REST API with JWT authentication, financial validation, automated CI/CD and live post-deployment testing.
 
-## 2. Show the health endpoint
+Point out that this is not a static mock. Registering, creating accounts and transferring funds all call the live FastAPI backend.
 
-Open:
+## 2. Register and log in
 
-https://samuel-kimani-bank-api-demo.onrender.com/health
+Use the dashboard to create a temporary user and log in.
 
-Expected response:
+Explain:
 
-```json
-{
-  "status": "ok",
-  "service": "bank-transaction-api",
-  "version": "1.0.0"
-}
+> Login returns a JWT access token. The browser uses that token in the Authorization header for protected account and transaction requests.
+
+## 3. Create two KES accounts
+
+Click **Create account** twice, for example:
+
+```text
+Samuel Current Account   KES 50,000
+Samuel Savings Account   KES 10,000
 ```
 
-Explain that Render also uses `/health` to determine whether the service started correctly.
+Show that the dashboard updates the total KES balance and account count from API data.
 
-## 3. Show the API surface
+## 4. Run a live transaction
 
-In Swagger, point out:
+Use the dashboard to:
+
+1. Deposit money into an account.
+2. Withdraw a valid amount.
+3. Transfer KES 5,000 between the two accounts.
+4. Show the updated balances.
+5. Show the new transaction records in Recent Transactions.
+
+Then deliberately demonstrate one validation rule, such as an excessive withdrawal or transfer.
+
+Explain:
+
+> The browser contains presentation logic, but the banking business rules remain in the backend service layer. The API decides whether a financial operation is valid.
+
+## 5. Open Swagger and show the API underneath
+
+https://samuel-kimani-bank-api-demo.onrender.com/docs
+
+Point out:
 
 - `POST /auth/register`
 - `POST /auth/login`
@@ -43,52 +64,46 @@ In Swagger, point out:
 - `GET /transactions`
 - `GET /health`
 
-## 4. Run a live transaction flow
+This demonstrates that the same backend can serve both the portfolio dashboard and other API consumers.
 
-1. Register a new demo user.
-2. Log in and copy the returned JWT access token.
-3. Click **Authorize** in Swagger and paste the token.
-4. Create two KES accounts.
-5. Transfer KES 5,000 between them.
-6. List accounts to show the new balances.
-7. Open transaction history to show the recorded transfer.
-8. Attempt an excessive transfer and show the `Insufficient balance` validation.
-9. Reuse a transaction reference and show duplicate-reference protection.
-
-## 5. Explain the business rules
+## 6. Explain the business rules
 
 Highlight these controls:
 
 - Transaction references must be unique.
-- Deposits and transfers must use positive amounts.
+- Deposits, withdrawals and transfers must use positive amounts.
 - Withdrawals and transfers cannot exceed the available balance.
 - Source and destination accounts must differ.
 - Transfer currencies must match.
 - Account lookup is restricted to the authenticated owner.
 - Protected endpoints require a valid JWT bearer token.
 
-## 6. Show the architecture
+## 7. Show the architecture
 
 ```text
-Browser / Swagger
+Browser
+  -> HTML / CSS / JavaScript dashboard
   -> Render Web Service
   -> Uvicorn
   -> FastAPI route
   -> Pydantic validation
   -> JWT authentication
-  -> service-layer business rules
+  -> service-layer banking rules
   -> SQLAlchemy ORM
   -> SQLite demo database
 ```
 
-Explain that SQLite keeps the demo lightweight. A production environment would use PostgreSQL or another managed persistent database.
+Explain that the frontend is intentionally lightweight and same-origin. It consumes the REST API without duplicating banking rules.
 
-## 7. Show automated tests
+SQLite keeps the portfolio demo lightweight. A production environment would use PostgreSQL or another managed persistent database.
+
+## 8. Show automated tests
 
 Open `tests/test_api.py`.
 
-The current suite includes 11 automated test cases covering:
+The suite contains 12 automated test cases covering:
 
+- dashboard HTML, CSS and JavaScript delivery
 - health endpoint
 - registration and login
 - authenticated account creation
@@ -110,7 +125,7 @@ Run locally with:
 pytest -q
 ```
 
-## 8. Show CI/CD
+## 9. Show CI/CD
 
 Open:
 
@@ -133,27 +148,32 @@ There are two important workflows.
 
 `.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the actual Render service.
 
-It automatically:
+It automatically verifies:
 
 ```text
-checks health, landing page, Swagger and OpenAPI
-  -> registers a temporary user
-  -> logs in and obtains JWT
-  -> creates two KES accounts
-  -> transfers KES 750
-  -> verifies both balances
-  -> verifies transaction history
+live dashboard HTML/CSS/JavaScript
+  -> health, Swagger and OpenAPI
+  -> register a temporary user
+  -> log in and obtain JWT
+  -> create two KES accounts
+  -> transfer KES 750
+  -> verify both balances
+  -> verify transaction history
 ```
 
-This is useful to explain because it demonstrates post-deployment verification, not only local unit/API testing.
+This demonstrates post-deployment verification, not only local testing.
 
-## 9. Show deployment configuration
+## 10. Show deployment configuration
 
 Open `render.yaml` and explain:
 
 > The deployment is defined as Infrastructure as Code. Render uses the file to select Python 3.12, install dependencies, start Uvicorn, configure environment variables and check the health endpoint.
 
 ## Likely panel questions
+
+### Why add a frontend if the role is API-focused?
+
+The dashboard proves that the REST API is usable by a real client. I kept the frontend thin so financial validation remains in the backend service layer.
 
 ### Why FastAPI?
 
@@ -177,11 +197,11 @@ The demo uses SQLite and is not designed for high-concurrency banking workloads.
 
 ### How would you integrate M-Pesa or another bank?
 
-I would add an integration adapter or payment service that calls the external API, stores provider transaction IDs, handles callbacks/webhooks, retries transient failures safely and reconciles final states.
+I would add an integration adapter or payment service that calls the external API, stores provider transaction IDs, handles callbacks or webhooks, retries transient failures safely and reconciles final states.
 
 ## Closing statement
 
-> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, validate input, implement financial rules, secure access, test success and failure cases, automate CI, package the service, deploy it and verify the live transaction flow end to end.
+> This project demonstrates the full engineering flow: build a user-facing client, define the API contract, validate input, implement financial rules, secure access, test success and failure cases, automate CI, package and deploy the application, then verify the live transaction flow end to end.
 
 ## Supporting documentation
 
