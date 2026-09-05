@@ -87,7 +87,7 @@ Explain that SQLite keeps the demo lightweight. A production environment would u
 
 Open `tests/test_api.py`.
 
-The current suite covers:
+The current suite includes 11 automated test cases covering:
 
 - health endpoint
 - registration and login
@@ -116,7 +116,7 @@ Open:
 
 https://github.com/kimtour/bank-transaction-api/actions
 
-There are two important workflows:
+There are two important workflows.
 
 ### CI
 
@@ -131,14 +131,21 @@ There are two important workflows:
 
 ### Live Smoke Test
 
-`.github/workflows/live-smoke.yml` verifies the deployed Render service by checking:
+`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the actual Render service.
 
-- `/health`
-- `/`
-- `/docs`
-- `/openapi.json`
+It automatically:
 
-This demonstrates both application testing and post-deployment verification.
+```text
+checks health, landing page, Swagger and OpenAPI
+  -> registers a temporary user
+  -> logs in and obtains JWT
+  -> creates two KES accounts
+  -> transfers KES 750
+  -> verifies both balances
+  -> verifies transaction history
+```
+
+This is useful to explain because it demonstrates post-deployment verification, not only local unit/API testing.
 
 ## 9. Show deployment configuration
 
@@ -174,10 +181,11 @@ I would add an integration adapter or payment service that calls the external AP
 
 ## Closing statement
 
-> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, validate input, implement financial rules, secure access, test success and failure cases, automate CI, package the service and verify the live deployment.
+> The project demonstrates the full engineering flow I would use in a banking environment: define the API contract, validate input, implement financial rules, secure access, test success and failure cases, automate CI, package the service, deploy it and verify the live transaction flow end to end.
 
 ## Supporting documentation
 
 - [`TECH_STACK.md`](TECH_STACK.md)
 - [`BUILD_FROM_SCRATCH.md`](BUILD_FROM_SCRATCH.md)
 - [`HOSTING.md`](HOSTING.md)
+- [`../scripts/live_smoke.py`](../scripts/live_smoke.py)
