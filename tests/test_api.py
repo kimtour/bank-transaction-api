@@ -19,6 +19,20 @@ def register_and_login(username="samuel"):
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
+def test_dashboard_and_static_assets_are_served():
+    dashboard = client.get("/")
+    styles = client.get("/static/styles.css")
+    script = client.get("/static/app.js")
+
+    assert dashboard.status_code == 200
+    assert "Bank Transaction System" in dashboard.text
+    assert "live FastAPI backend" in dashboard.text
+    assert styles.status_code == 200
+    assert ".account-card" in styles.text
+    assert script.status_code == 200
+    assert 'api("/accounts")' in script.text
+
+
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
