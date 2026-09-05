@@ -7,17 +7,20 @@
 ![Render](https://img.shields.io/badge/Hosted_on-Render-purple)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-A full-stack banking portfolio application demonstrating backend engineering, REST API design, JWT authentication, financial business rules, a responsive browser dashboard, automated testing, CI/CD, Docker packaging and live cloud deployment.
+A full-stack banking portfolio application demonstrating backend engineering, REST API design, JWT authentication, financial business rules, a responsive browser dashboard, automated testing, CI/CD, Docker packaging, a live technical build walkthrough and cloud deployment.
 
 ## Live application
 
 - **Live banking dashboard:** https://samuel-kimani-bank-api-demo.onrender.com/
+- **Build From Scratch Walkthrough:** https://samuel-kimani-bank-api-demo.onrender.com/walkthrough
 - **Interactive Swagger API:** https://samuel-kimani-bank-api-demo.onrender.com/docs
 - **Health check:** https://samuel-kimani-bank-api-demo.onrender.com/health
 - **OpenAPI contract:** https://samuel-kimani-bank-api-demo.onrender.com/openapi.json
 - **GitHub Actions:** https://github.com/kimtour/bank-transaction-api/actions
 
 The dashboard is a real client of the same FastAPI backend. Register or log in, create accounts, deposit or withdraw funds, transfer between accounts and inspect transaction history directly in the browser.
+
+The `/walkthrough` page explains the complete development stack from `git clone`, VS Code and `venv` through FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and `render.yaml`.
 
 The demo runs on Render's free web-service tier. A first request after inactivity can take longer while the service wakes up. SQLite is intentionally used for disposable portfolio data, so records can reset after a restart or redeploy.
 
@@ -32,10 +35,11 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 - Recent transaction history and status badges
 - Live API health indicator
 - Responsive desktop and mobile layout
-- Direct links to Swagger documentation and GitHub
+- Direct links to the Build Walkthrough, Swagger documentation and GitHub
 
 ## Documentation
 
+- **Live [`/walkthrough`](https://samuel-kimani-bank-api-demo.onrender.com/walkthrough)** - browser-based technical guide showing how the project is built from scratch.
 - [`docs/INTERVIEW_DEMO.md`](docs/INTERVIEW_DEMO.md) - focused panel walkthrough and interview talking points.
 - [`docs/TECH_STACK.md`](docs/TECH_STACK.md) - explanation of the frontend, FastAPI, Uvicorn, SQLAlchemy, SQLite, Pydantic, PyJWT, Pytest, HTTPX, GitHub Actions, Docker and Render.
 - [`docs/BUILD_FROM_SCRATCH.md`](docs/BUILD_FROM_SCRATCH.md) - step-by-step setup from `git clone` through deployment.
@@ -55,7 +59,8 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 - Insufficient-funds, positive-amount and currency validation
 - Account ownership enforcement
 - Transaction history and audit-friendly references
-- Automated API and dashboard tests with Pytest
+- Live build-from-scratch technical documentation
+- Automated API, dashboard and walkthrough tests with Pytest
 - GitHub Actions CI on pushes and pull requests
 - Full live authenticated post-deployment verification
 - Docker image build verification
@@ -67,8 +72,14 @@ The demo runs on Render's free web-service tier. A first request after inactivit
 ```text
 Browser
   |
+  +--> Live banking dashboard /
+  |
+  +--> Build walkthrough /walkthrough
+  |
+  +--> Swagger /docs
+  |
   v
-HTML + CSS + JavaScript dashboard
+HTML + CSS + JavaScript frontend
   |
   v
 Render Web Service
@@ -93,7 +104,7 @@ SQLAlchemy ORM
 SQLite
 ```
 
-The frontend and API are deployed together from one repository and one Render web service. The dashboard calls the live API through same-origin requests, while `/docs` remains available for direct API demonstrations.
+The frontend, technical walkthrough and API are deployed together from one repository and one Render web service. The dashboard calls the live API through same-origin requests, while `/docs` remains available for direct API demonstrations.
 
 For a production banking workload, the SQLite layer would be replaced by PostgreSQL or another managed persistent database with migrations, stronger concurrency controls and production observability.
 
@@ -103,18 +114,20 @@ For a production banking workload, the SQLite layer would be replaced by Postgre
 bank-transaction-api/
 |
 |-- app/
-|   |-- main.py              # FastAPI routes and dashboard hosting
+|   |-- main.py              # FastAPI routes, dashboard and walkthrough hosting
 |   |-- database.py          # SQLAlchemy engine and sessions
 |   |-- models.py            # Database tables
 |   |-- schemas.py           # Pydantic request and response models
 |   |-- security.py          # Password hashing and JWT authentication
 |   |-- services.py          # Banking business rules
 |   `-- static/
-|       |-- index.html       # Live dashboard structure
+|       |-- index.html       # Live banking dashboard structure
 |       |-- styles.css       # Responsive banking UI
-|       `-- app.js           # Browser-to-API integration
+|       |-- app.js           # Browser-to-API integration
+|       |-- walkthrough.html # Build From Scratch Walkthrough
+|       `-- walkthrough.css  # Walkthrough page styling
 |
-|-- tests/test_api.py        # API and dashboard tests
+|-- tests/test_api.py        # API, dashboard and walkthrough tests
 |-- scripts/live_smoke.py    # Hosted end-to-end verification
 |-- .github/workflows/       # CI and live smoke workflows
 |-- Dockerfile               # Container build
@@ -128,6 +141,7 @@ bank-transaction-api/
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/` | Live banking dashboard |
+| GET | `/walkthrough` | Build From Scratch technical walkthrough |
 | GET | `/health` | Service health check |
 | POST | `/auth/register` | Register a user |
 | POST | `/auth/login` | Obtain JWT access token |
@@ -152,15 +166,17 @@ python -m uvicorn app.main:app --reload
 Open:
 
 - Dashboard: `http://127.0.0.1:8000/`
+- Build Walkthrough: `http://127.0.0.1:8000/walkthrough`
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - Health endpoint: `http://127.0.0.1:8000/health`
 
 ## Fast live demo flow
 
-The easiest portfolio demonstration is now through the dashboard:
+The easiest portfolio demonstration is:
 
 ```text
 Open live dashboard
+  -> Open Build Walkthrough to explain the technology stack
   -> Register a user
   -> Create two KES accounts
   -> Deposit or withdraw funds
@@ -197,7 +213,7 @@ Run locally:
 pytest -q
 ```
 
-The suite covers dashboard/static assets, health checks, registration/login, protected resources, account creation, deposits, duplicate references, insufficient funds, successful transfers and balances, transaction history, invalid tokens, zero-value validation, same-account transfers, currency mismatch and account ownership.
+The suite covers dashboard/static assets, the live walkthrough route and assets, health checks, registration/login, protected resources, account creation, deposits, duplicate references, insufficient funds, successful transfers and balances, transaction history, invalid tokens, zero-value validation, same-account transfers, currency mismatch and account ownership.
 
 ## CI and deployment verification
 
@@ -216,21 +232,7 @@ Checkout repository
 
 ### Live end-to-end smoke workflow
 
-`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the public Render deployment. It verifies:
-
-```text
-Dashboard HTML, CSS and JavaScript
-  -> /health
-  -> Swagger and OpenAPI contract
-  -> register a unique temporary user
-  -> login and obtain JWT
-  -> create two KES accounts
-  -> transfer KES 750
-  -> verify resulting balances
-  -> verify transaction history
-```
-
-This proves not only that the site is reachable, but that the deployed frontend assets, authentication, database writes and core banking transfer flow work.
+`.github/workflows/live-smoke.yml` runs `scripts/live_smoke.py` against the public Render deployment. It verifies the hosted application, authentication, database writes and core banking transfer flow.
 
 ## Docker
 
@@ -251,6 +253,8 @@ docker run -p 8000:8000 --env JWT_SECRET=demo-secret bank-transaction-api
 
 **Same-origin frontend integration** keeps the portfolio deployment simple while still demonstrating a real browser client consuming protected APIs.
 
+**Live technical walkthrough** makes the project useful not only as a working demo but also as an explanation of the development, testing and deployment stack.
+
 **Environment configuration** separates code from deployment-specific settings and secrets.
 
 **Infrastructure as Code** keeps the Render deployment configuration version-controlled in `render.yaml`.
@@ -265,13 +269,14 @@ A production version would add PostgreSQL, Alembic migrations, structured audit 
 
 1. Translating financial requirements into API contracts and validation rules.
 2. Building a browser dashboard that consumes the protected REST API rather than duplicating business logic.
-3. Protecting transactions from duplicates, invalid amounts, currency mismatch and insufficient funds.
-4. Securing customer resources through JWT authentication and ownership checks.
-5. Testing both success paths, failure cases and frontend asset delivery.
-6. Moving compilation, tests and Docker verification into CI.
-7. Defining deployment with version-controlled Infrastructure as Code.
-8. Verifying the hosted system with an authenticated end-to-end smoke test.
-9. Extending the service to M-Pesa, core banking systems or other payment channels.
+3. Explaining the complete build stack through the live `/walkthrough` page.
+4. Protecting transactions from duplicates, invalid amounts, currency mismatch and insufficient funds.
+5. Securing customer resources through JWT authentication and ownership checks.
+6. Testing both success paths, failure cases and frontend asset delivery.
+7. Moving compilation, tests and Docker verification into CI.
+8. Defining deployment with version-controlled Infrastructure as Code.
+9. Verifying the hosted system with an authenticated end-to-end smoke test.
+10. Extending the service to M-Pesa, core banking systems or other payment channels.
 
 ## Author
 
