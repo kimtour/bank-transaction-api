@@ -29,6 +29,11 @@ def home():
     return FileResponse(static_dir / "index.html")
 
 
+@app.get("/walkthrough", response_class=FileResponse, include_in_schema=False)
+def walkthrough():
+    return FileResponse(static_dir / "walkthrough.html")
+
+
 @app.get("/health", tags=["System"])
 def health():
     return {"status": "ok", "service": "bank-transaction-api", "version": "1.0.0"}
