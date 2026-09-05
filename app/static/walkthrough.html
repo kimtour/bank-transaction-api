@@ -62,7 +62,7 @@
         <div class="hero-points">
           <span>Beginner friendly</span>
           <span>Every command explained</span>
-          <span>Interview ready</span>
+          <span>Portfolio ready</span>
           <span>Based on the live project</span>
         </div>
       </section>
@@ -70,296 +70,277 @@
       <section id="git-clone" class="walkthrough-section">
         <span class="section-number">01</span>
         <h2><code>git clone</code></h2>
-        <p><code>git clone</code> is a Git command that copies an existing GitHub repository onto your computer.</p>
+        <p><code>git clone</code> copies an existing GitHub repository onto your computer.</p>
         <div class="flow-box">GitHub repository → your laptop</div>
         <pre><code>git clone https://github.com/kimtour/bank-transaction-api.git  # Copies the GitHub repository onto your computer.
-cd bank-transaction-api                                        # Moves your Terminal into the downloaded project folder.</code></pre>
-        <p>After cloning, you can edit the files locally using VS Code.</p>
-        <h3>Related Git commands</h3>
-        <pre><code>git status                              # Shows which files have been changed, added, or deleted.
-git add .                               # Stages all changed files so Git knows you want to include them in a commit.
-git commit -m "Add banking API"         # Saves a snapshot of the staged changes with a descriptive message.
-git push origin main                    # Uploads your local commits to the main branch on GitHub.
-git pull origin main                    # Downloads newer changes from GitHub into your local project.</code></pre>
+cd bank-transaction-api                                        # Moves Terminal into the downloaded project folder.
+git status                                                     # Shows changed, added or deleted files.
+git add .                                                      # Stages all changed files for the next commit.
+git commit -m "Update banking system"                          # Saves a versioned snapshot of staged changes.
+git push origin main                                           # Uploads local commits to GitHub.
+git pull origin main                                           # Downloads newer changes from GitHub.</code></pre>
       </section>
 
       <section id="vscode" class="walkthrough-section">
         <span class="section-number">02</span>
         <h2>Python IDE setup using VS Code</h2>
-        <p>An IDE is software where you write, run, debug and manage code. VS Code is technically a code editor, but with extensions it works like a full Python IDE.</p>
-        <h3>Install these extensions</h3>
-        <pre><code>Python                 # Adds Python language support and debugging.
-Pylance                # Adds intelligent code completion and type analysis.
-GitHub Copilot         # Optional AI coding assistant.
-Docker                 # Optional Docker file and container support.</code></pre>
-        <h3>Open the project</h3>
-        <pre><code>cd bank-transaction-api  # Moves Terminal into your API project directory.
-code .                    # Opens the current directory as a project inside VS Code.</code></pre>
-        <p>If <code>code .</code> does not work on Mac, press <strong>Command + Shift + P</strong> in VS Code and run <code>Shell Command: Install 'code' command in PATH</code>.</p>
+        <p>VS Code becomes a complete Python development environment after you add the Python tooling.</p>
+        <pre><code>Python          # Adds Python language support, running and debugging.
+Pylance         # Adds code completion and type analysis.
+GitHub Copilot  # Optional coding assistant.
+Docker          # Optional Docker file and container support.</code></pre>
+        <pre><code>cd bank-transaction-api  # Moves Terminal into the project directory.
+code .                    # Opens the current directory in VS Code.</code></pre>
+        <p>On macOS, if <code>code .</code> is unavailable, use Command + Shift + P and run <code>Shell Command: Install 'code' command in PATH</code>.</p>
       </section>
 
       <section id="venv" class="walkthrough-section">
         <span class="section-number">03</span>
         <h2><code>venv</code></h2>
-        <p><code>venv</code> means virtual environment. It creates an isolated Python environment specifically for one project so packages do not conflict with other projects.</p>
-        <div class="flow-box">Project A → FastAPI version A &nbsp;&nbsp; | &nbsp;&nbsp; Project B → FastAPI version B</div>
-        <pre><code>python3 -m venv .venv       # Uses Python's built-in venv module to create an isolated environment named .venv.
-source .venv/bin/activate   # Activates the project's virtual Python environment on macOS/Linux.
-deactivate                  # Leaves the virtual environment and returns to the normal system Python environment.</code></pre>
-        <p>When active, your terminal usually begins with <code>(.venv)</code>.</p>
+        <p>A virtual environment isolates this project's Python packages from packages used by other projects.</p>
+        <pre><code>python3 -m venv .venv      # Creates an isolated Python environment named .venv.
+source .venv/bin/activate  # Activates the environment on macOS or Linux.
+deactivate                 # Leaves the virtual environment when you finish.</code></pre>
       </section>
 
       <section id="libraries" class="walkthrough-section">
         <span class="section-number">04</span>
-        <h2>Installing the libraries</h2>
-        <pre><code>pip install fastapi      # Installs FastAPI, the framework used to create REST API endpoints.
-pip install uvicorn      # Installs Uvicorn, the web server that runs the FastAPI application.
-pip install sqlalchemy   # Installs SQLAlchemy, used to communicate with and model the database.
-pip install pydantic     # Installs Pydantic, used to validate incoming and outgoing API data.
-pip install pyjwt        # Installs PyJWT, used to create and verify JSON Web Tokens for authentication.
-pip install pytest       # Installs Pytest, used to automatically test the application.
-pip install httpx        # Installs HTTPX, an HTTP client used heavily when testing API requests.</code></pre>
-        <p>Normally install them together:</p>
-        <pre><code>pip install fastapi uvicorn sqlalchemy pydantic pyjwt pytest httpx  # Installs all main application and testing libraries in one command.
-pip freeze &gt; requirements.txt                                       # Writes installed package names and versions into requirements.txt.
-pip install -r requirements.txt                                     # Reinstalls all dependencies listed in requirements.txt.</code></pre>
+        <h2>Install the libraries</h2>
+        <pre><code>pip install fastapi      # Installs the framework used to create REST API endpoints.
+pip install uvicorn      # Installs the ASGI server that runs FastAPI.
+pip install sqlalchemy   # Installs the ORM used to communicate with the database.
+pip install pydantic     # Installs request and response data validation.
+pip install pyjwt        # Installs JWT creation and verification support.
+pip install pytest       # Installs the automated Python testing framework.
+pip install httpx        # Installs the HTTP client used by API tests.</code></pre>
+        <pre><code>pip install fastapi uvicorn sqlalchemy pydantic pyjwt pytest httpx  # Installs the main libraries together.
+pip freeze &gt; requirements.txt                                       # Saves installed package versions.
+pip install -r requirements.txt                                     # Reinstalls packages listed in requirements.txt.</code></pre>
       </section>
 
       <section id="fastapi" class="walkthrough-section">
         <span class="section-number">05</span>
         <h2>FastAPI</h2>
-        <p>FastAPI is a Python web framework for creating APIs. It allows Python to receive requests such as <code>GET /accounts</code>, <code>POST /transactions</code> and <code>POST /transfers</code>.</p>
-        <pre><code>from fastapi import FastAPI  # Imports the FastAPI class from the FastAPI package.
-app = FastAPI()              # Creates the main FastAPI application object.
+        <p>FastAPI defines HTTP endpoints and converts Python return values into API responses.</p>
+        <pre><code>from fastapi import FastAPI  # Imports the FastAPI class.
+app = FastAPI()              # Creates the main web application object.
 
-@app.get("/health")          # Tells FastAPI that GET requests to /health should run the function below.
-def health():                # Defines the Python function that handles the /health request.
-    return {"status": "ok"}  # Returns JSON data to whoever called the API.</code></pre>
-        <div class="flow-box">GET /health → {"status": "ok"}</div>
+@app.get("/health")          # Maps HTTP GET /health to the function below.
+def health():                # Defines the request handler.
+    return {"status": "ok"}  # Returns a JSON response.</code></pre>
+        <div class="flow-box">GET /health → FastAPI → JSON response</div>
       </section>
 
       <section id="uvicorn" class="walkthrough-section">
         <span class="section-number">06</span>
         <h2>Uvicorn</h2>
-        <p>FastAPI defines your application. Uvicorn actually runs it as a web server.</p>
-        <div class="flow-box">FastAPI = application &nbsp;&nbsp; | &nbsp;&nbsp; Uvicorn = server</div>
-        <pre><code>uvicorn app.main:app --reload  # Starts the FastAPI app in app/main.py and automatically reloads after code changes.</code></pre>
+        <p>FastAPI defines the application. Uvicorn runs it as a web server.</p>
+        <pre><code>uvicorn app.main:app --reload  # Loads app/main.py, finds the app object and reloads after source changes.</code></pre>
         <ul>
-          <li><code>uvicorn</code>: run the Uvicorn server.</li>
-          <li><code>app.main</code>: go to the <code>app</code> package and load <code>main.py</code>.</li>
-          <li><code>:app</code>: find the variable named <code>app</code>.</li>
-          <li><code>--reload</code>: restart automatically whenever source code changes.</li>
+          <li><code>uvicorn</code> starts the server.</li>
+          <li><code>app.main</code> means the <code>main.py</code> module inside the <code>app</code> package.</li>
+          <li><code>:app</code> points to the FastAPI variable named <code>app</code>.</li>
+          <li><code>--reload</code> restarts the development server when code changes.</li>
         </ul>
-        <pre><code>app = FastAPI()  # Creates the FastAPI object that Uvicorn will run.</code></pre>
-        <p>Local server: <code>http://127.0.0.1:8000</code>. Swagger: <code>http://127.0.0.1:8000/docs</code>.</p>
       </section>
 
       <section id="sqlalchemy" class="walkthrough-section">
         <span class="section-number">07</span>
         <h2>SQLAlchemy</h2>
-        <p>SQLAlchemy lets Python communicate with a relational database. It is an ORM, meaning Object Relational Mapper.</p>
-        <div class="flow-box">Python class → database table</div>
-        <pre><code>account = Account()  # Creates a Python object representing a new row in the accounts table.
-db.add(account)       # Tells SQLAlchemy that this object should be added to the database.
-db.commit()           # Saves the pending database changes permanently.</code></pre>
-        <pre><code>class Account(Base):                              # Defines a Python class mapped to a database table.
-    __tablename__ = "accounts"                    # Names the actual database table "accounts".
-    id = Column(Integer, primary_key=True)        # Creates an integer ID primary-key column.
-    account_number = Column(String, unique=True)  # Creates a text account-number column and prevents duplicates.
-    balance = Column(Numeric(15, 2), default=0)   # Creates a decimal money column with two decimal places.</code></pre>
+        <p>SQLAlchemy is the Object Relational Mapper used to map Python classes and operations to relational database tables and queries.</p>
+        <pre><code>account = Account()  # Creates a Python object representing an account row.
+db.add(account)       # Adds the new object to the current database session.
+db.commit()           # Saves the pending change permanently.</code></pre>
+        <pre><code>class Account(Base):                              # Defines a SQLAlchemy model class.
+    __tablename__ = "accounts"                    # Maps the class to the accounts table.
+    id = Column(Integer, primary_key=True)        # Creates the integer primary-key column.
+    account_number = Column(String, unique=True)  # Stores a unique account number.
+    balance = Column(Numeric(15, 2), default=0)   # Stores money with two decimal places.</code></pre>
       </section>
 
       <section id="sqlite" class="walkthrough-section">
         <span class="section-number">08</span>
         <h2>SQLite</h2>
-        <p>SQLite is a small relational database stored as a file. It is ideal for learning, prototypes, small applications, interview demos and local development.</p>
-        <pre><code>DATABASE_URL = "sqlite:///bank.db"  # Tells SQLAlchemy that the database is a local SQLite file named bank.db.
-engine = create_engine(             # Creates SQLAlchemy's connection engine for SQLite.
-    DATABASE_URL,                   # Uses the database URL defined above.
-    connect_args={"check_same_thread": False}  # Allows FastAPI requests to use SQLite safely across threads in this demo.
+        <p>SQLite is a lightweight relational database stored in a file. It works well for learning, prototypes, portfolio applications and local development.</p>
+        <pre><code>DATABASE_URL = "sqlite:///bank.db"                            # Points SQLAlchemy to the local bank.db file.
+engine = create_engine(                                       # Creates the SQLAlchemy database engine.
+    DATABASE_URL,                                             # Uses the SQLite connection URL above.
+    connect_args={"check_same_thread": False}                 # Allows FastAPI request threads to use this SQLite database.
 )</code></pre>
         <div class="flow-box">FastAPI → SQLAlchemy → SQLite → bank.db</div>
-        <p><strong>SQLAlchemy</strong> is the Python database library. <strong>SQLite</strong> is the actual database. A production banking workload would normally use PostgreSQL or another managed database.</p>
+        <p>A production banking workload would typically replace SQLite with PostgreSQL or another managed database.</p>
       </section>
 
       <section id="pydantic" class="walkthrough-section">
         <span class="section-number">09</span>
         <h2>Pydantic</h2>
-        <p>Pydantic validates data entering your API. For example, a banking transaction should not accept a zero or negative transfer amount.</p>
-        <pre><code>from decimal import Decimal             # Imports Decimal, which is safer than floating-point numbers for money.
-from pydantic import BaseModel, Field    # Imports Pydantic's model base class and validation helper.
+        <p>Pydantic validates incoming API data before the request reaches banking business rules.</p>
+        <pre><code>from decimal import Decimal             # Imports decimal arithmetic for monetary values.
+from pydantic import BaseModel, Field    # Imports Pydantic model and validation helpers.
 
-class TransferRequest(BaseModel):        # Defines the expected structure of a transfer request.
-    source_account: str                  # Requires the source account to be supplied as text.
-    destination_account: str             # Requires the destination account to be supplied as text.
-    amount: Decimal = Field(gt=0)        # Requires the transfer amount to be greater than zero.
+class TransferRequest(BaseModel):        # Defines the required transfer request structure.
+    source_account: str                  # Requires a source account number.
+    destination_account: str             # Requires a destination account number.
+    amount: Decimal = Field(gt=0)        # Rejects zero or negative transfer values.
     reference: str                       # Requires a transaction reference.</code></pre>
-        <div class="flow-box">Client request → Pydantic validation → FastAPI endpoint → business logic</div>
       </section>
 
       <section id="pyjwt" class="walkthrough-section">
         <span class="section-number">10</span>
         <h2>PyJWT</h2>
-        <p>JWT means JSON Web Token. PyJWT creates and validates JWTs used for API authentication.</p>
-        <div class="flow-box">Login → verify credentials → create JWT → client stores token → token sent with future requests</div>
-        <pre><code>import jwt  # Imports the PyJWT package.
-token = jwt.encode(                       # Creates a signed JSON Web Token.
-    {"sub": "123"},                      # Stores user ID 123 inside the token subject claim.
-    "secret-key",                         # Uses a secret key to sign the token.
-    algorithm="HS256"                    # Uses the HS256 signing algorithm.
+        <p>PyJWT creates and validates JSON Web Tokens used to protect account and transaction endpoints.</p>
+        <pre><code>import jwt                                                    # Imports the PyJWT package.
+token = jwt.encode(                                           # Creates a signed JWT.
+    {"sub": "123"},                                          # Stores user ID 123 as the token subject.
+    "secret-key",                                             # Uses a secret key to sign the token.
+    algorithm="HS256"                                        # Uses the HS256 signing algorithm.
 )</code></pre>
-        <pre><code>Authorization: Bearer eyJhbGciOi...  # Sends the JWT in the Authorization header for protected API requests.</code></pre>
+        <pre><code>Authorization: Bearer eyJhbGciOi...  # Sends the token with an authenticated HTTP request.</code></pre>
       </section>
 
       <section id="pytest" class="walkthrough-section">
         <span class="section-number">11</span>
         <h2>Pytest</h2>
-        <p>Pytest is an automated testing framework for Python. It lets you verify the application automatically instead of manually retesting every endpoint after every code change.</p>
-        <pre><code>from fastapi.testclient import TestClient  # Imports FastAPI's testing client.
-from app.main import app                    # Imports the FastAPI application that will be tested.
-client = TestClient(app)                    # Creates a test client connected to the FastAPI application.
+        <p>Pytest automatically checks the application after code changes.</p>
+        <pre><code>from fastapi.testclient import TestClient  # Imports FastAPI's test client.
+from app.main import app                    # Imports the FastAPI application.
+client = TestClient(app)                    # Creates an HTTP client connected to the app.
 
-def test_health():                          # Defines a test function discovered automatically by Pytest.
-    response = client.get("/health")         # Sends a simulated GET request to /health.
-    assert response.status_code == 200       # Fails unless the server returned HTTP 200.
-    assert response.json()["status"] == "ok" # Fails unless the JSON response contains status="ok".</code></pre>
-        <pre><code>pytest     # Searches the project for tests and executes them.
-pytest -q  # Runs all tests with shorter, cleaner output.</code></pre>
+def test_health():                          # Defines a test Pytest discovers automatically.
+    response = client.get("/health")         # Sends a simulated request to /health.
+    assert response.status_code == 200       # Requires HTTP 200.
+    assert response.json()["status"] == "ok" # Requires the expected JSON status.</code></pre>
+        <pre><code>pytest     # Runs all discovered tests.
+pytest -q  # Runs the tests with compact output.</code></pre>
       </section>
 
       <section id="httpx" class="walkthrough-section">
         <span class="section-number">12</span>
         <h2>HTTPX</h2>
-        <p>HTTPX is a Python HTTP client. It allows Python programs to make HTTP requests to web APIs and supports FastAPI testing workflows.</p>
-        <div class="flow-box">Python program → HTTPX → API</div>
-        <pre><code>import httpx                                      # Imports the HTTPX library.
-response = httpx.get("https://example.com/api")   # Sends an HTTP GET request to an API.
-print(response.status_code)                       # Prints the HTTP response status, for example 200.
-print(response.json())                            # Converts the JSON response into Python data and prints it.</code></pre>
+        <p>HTTPX lets Python send HTTP requests and underpins common FastAPI testing workflows.</p>
+        <pre><code>import httpx                                      # Imports the HTTPX client library.
+response = httpx.get("https://example.com/api")   # Sends an HTTP GET request.
+print(response.status_code)                       # Displays the returned HTTP status code.
+print(response.json())                            # Parses and displays the JSON response.</code></pre>
       </section>
 
       <section id="requirements" class="walkthrough-section">
         <span class="section-number">13</span>
         <h2><code>requirements.txt</code></h2>
-        <p>This file tells another computer which Python packages the program needs.</p>
+        <p>This file records the Python dependencies another computer needs to run the project.</p>
         <pre><code>fastapi==0.116.1      # FastAPI framework used to build the REST API.
-uvicorn==0.35.0       # ASGI server used to run the FastAPI application.
-SQLAlchemy==2.0.43    # ORM used for database access and table modelling.
-PyJWT==2.10.1         # Library used to create and validate JWT authentication tokens.
-pytest==8.4.1         # Testing framework used for automated application tests.
-httpx==0.28.1         # HTTP client used by API tests and HTTP integrations.</code></pre>
-        <pre><code>pip install -r requirements.txt  # Installs every dependency and version listed inside requirements.txt.</code></pre>
+uvicorn==0.35.0       # ASGI server used to run FastAPI.
+SQLAlchemy==2.0.43    # ORM used for relational database access.
+PyJWT==2.10.1         # JWT authentication library.
+pytest==8.4.1         # Automated testing framework.
+httpx==0.28.1         # HTTP client used by tests and integrations.</code></pre>
       </section>
 
       <section id="github-actions" class="walkthrough-section">
         <span class="section-number">14</span>
         <h2><code>.github/workflows/tests.yml</code></h2>
-        <p>This file creates the GitHub Actions Continuous Integration pipeline. The <code>.github/workflows/</code> directory is where GitHub automation workflows live.</p>
-        <pre><code>name: CI                              # Gives this GitHub Actions workflow the visible name "CI".
-on:                                   # Defines the events that should start this workflow.
-  push:                               # Runs the workflow whenever code is pushed.
-    branches: [main]                  # Limits push-triggered runs to the main branch.
-  pull_request:                       # Also runs whenever a pull request is created or updated.
-    branches: [main]                  # Only runs for pull requests targeting main.
+        <p>GitHub Actions runs Continuous Integration automatically when repository events trigger the workflow.</p>
+        <pre><code>name: CI                              # Gives the workflow a visible name.
+on:                                   # Defines events that start the workflow.
+  push:                               # Runs after code is pushed.
+    branches: [main]                  # Limits push runs to the main branch.
+  pull_request:                       # Runs for pull requests.
+    branches: [main]                  # Limits checks to pull requests targeting main.
 
-jobs:                                 # Begins the section containing automated jobs.
-  test:                               # Creates one job named "test".
-    runs-on: ubuntu-latest            # Creates a temporary Ubuntu Linux machine.
-    steps:                            # Begins the ordered list of actions.
-      - uses: actions/checkout@v4     # Downloads your repository code onto the temporary machine.
-      - uses: actions/setup-python@v5 # Installs and configures Python.
-        with:                         # Begins setup-python configuration.
-          python-version: "3.12"      # Specifies Python 3.12.
+jobs:                                 # Starts the automated jobs section.
+  test:                               # Defines a job named test.
+    runs-on: ubuntu-latest            # Uses a temporary Ubuntu runner.
+    steps:                            # Starts the ordered job steps.
+      - uses: actions/checkout@v4     # Downloads the repository onto the runner.
+      - uses: actions/setup-python@v5 # Installs Python on the runner.
+        with:                         # Supplies configuration to setup-python.
+          python-version: "3.12"      # Selects Python 3.12.
       - run: pip install -r requirements.txt  # Installs project dependencies.
-      - run: pytest -q                # Runs the automated Pytest suite.</code></pre>
-        <div class="flow-box">git push → checkout code → install Python → install dependencies → run tests → success or failure</div>
-        <p>This is Continuous Integration, or CI.</p>
+      - run: pytest -q                # Executes the automated test suite.</code></pre>
+        <div class="flow-box">git push → checkout → Python → dependencies → tests → result</div>
       </section>
 
       <section id="gitignore" class="walkthrough-section">
         <span class="section-number">15</span>
         <h2><code>.gitignore</code></h2>
-        <p>This file tells Git which local or sensitive files should not be uploaded to GitHub.</p>
-        <pre><code>.venv/          # Ignores your local Python virtual environment because it can be recreated.
-__pycache__/    # Ignores Python's automatically generated bytecode cache folders.
+        <p>This file prevents generated, local or sensitive files from being committed to GitHub.</p>
+        <pre><code>.venv/          # Ignores the local virtual environment.
+__pycache__/    # Ignores generated Python bytecode cache folders.
 *.pyc           # Ignores compiled Python bytecode files.
-.env            # Ignores your private environment-variable file so secrets are not uploaded.
-bank.db         # Ignores the local SQLite database and disposable demo data.
-.pytest_cache/  # Ignores temporary files generated by Pytest.</code></pre>
+.env            # Keeps private environment variables out of GitHub.
+bank.db         # Keeps disposable local SQLite data out of source control.
+.pytest_cache/  # Ignores temporary Pytest cache files.</code></pre>
       </section>
 
       <section id="env" class="walkthrough-section">
         <span class="section-number">16</span>
         <h2><code>.env.example</code></h2>
-        <p>This file shows developers which environment variables the application expects without exposing real secrets.</p>
-        <pre><code>JWT_SECRET=replace-with-secret  # Shows that the application requires a JWT signing secret without exposing the real value.
-DATABASE_URL=sqlite:///bank.db  # Shows the default database connection string.
-ACCESS_TOKEN_MINUTES=60         # Defines how many minutes an authentication token remains valid.</code></pre>
-        <pre><code>cp .env.example .env  # Creates a private working .env file from the safe example configuration.</code></pre>
+        <p>This file documents required environment variables without exposing real secrets.</p>
+        <pre><code>JWT_SECRET=replace-with-secret  # Documents the required JWT signing secret.
+DATABASE_URL=sqlite:///bank.db  # Documents the database connection string.
+ACCESS_TOKEN_MINUTES=60         # Documents access-token lifetime.</code></pre>
+        <pre><code>cp .env.example .env  # Creates a private local environment file from the safe example.</code></pre>
       </section>
 
       <section id="docker" class="walkthrough-section">
         <span class="section-number">17</span>
         <h2><code>Dockerfile</code></h2>
-        <p>A Dockerfile describes how to package your application into a portable container.</p>
-        <pre><code>FROM python:3.12-slim  # Starts with a lightweight Linux image that already contains Python 3.12.
-WORKDIR /app           # Creates and switches into the /app directory inside the container.
-COPY requirements.txt .  # Copies the Python dependency file into the container.
-RUN pip install --no-cache-dir -r requirements.txt  # Installs all project dependencies inside the container.
-COPY . .               # Copies the rest of the project source code into the container.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]  # Starts FastAPI when the container launches.</code></pre>
-        <div class="flow-box">Source code + Python + libraries + runtime configuration = Docker image</div>
+        <p>A Dockerfile describes how to package the application and its runtime into a portable container image.</p>
+        <pre><code>FROM python:3.12-slim                                                # Starts with a lightweight Python 3.12 image.
+WORKDIR /app                                                         # Sets /app as the working directory inside the container.
+COPY requirements.txt .                                             # Copies the dependency list into the image.
+RUN pip install --no-cache-dir -r requirements.txt                   # Installs all Python dependencies.
+COPY . .                                                             # Copies the application source code into the image.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]  # Starts the FastAPI service.</code></pre>
       </section>
 
       <section id="render" class="walkthrough-section">
         <span class="section-number">18</span>
         <h2><code>render.yaml</code></h2>
-        <p><code>render.yaml</code> tells Render how to host the application. Storing deployment settings with the code is called Infrastructure as Code.</p>
-        <pre><code>services:                                                     # Begins the list of services Render should create.
-  - type: web                                                 # Tells Render this service should be reachable through the web.
-    name: samuel-kimani-bank-api-demo                         # Gives the hosted service its Render name.
-    runtime: python                                           # Tells Render that the application uses Python.
-    plan: free                                                # Requests Render's free service plan.
-    region: frankfurt                                         # Places the service in Render's Frankfurt region.
-    buildCommand: python -m pip install --upgrade pip &amp;&amp; python -m pip install -r requirements.txt  # Installs dependencies during deployment.
+        <p><code>render.yaml</code> stores the deployment configuration with the source code. This approach is Infrastructure as Code.</p>
+        <pre><code>services:                                                     # Starts the list of Render services.
+  - type: web                                                 # Defines a publicly reachable web service.
+    name: samuel-kimani-bank-api-demo                         # Defines the Render service name.
+    runtime: python                                           # Selects the Python runtime.
+    plan: free                                                # Selects the configured service plan.
+    region: frankfurt                                         # Selects the hosting region.
+    buildCommand: python -m pip install --upgrade pip &amp;&amp; python -m pip install -r requirements.txt  # Installs dependencies during build.
     startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT  # Starts FastAPI on Render's assigned port.
-    healthCheckPath: /health                                  # Tells Render to call /health to verify the service started.
-    autoDeployTrigger: commit                                 # Deploys when a new commit reaches the connected branch.
-    envVars:                                                  # Begins deployment environment-variable configuration.
-      - key: PYTHON_VERSION                                   # Defines the requested Python version.
-        value: "3.12.14"                                      # Pins the service to Python 3.12.14.
-      - key: JWT_SECRET                                       # Defines the secret used to sign authentication tokens.
-        generateValue: true                                   # Tells Render to securely generate the secret.
-      - key: DATABASE_URL                                     # Defines the SQLAlchemy database connection string.
-        value: sqlite:///bank.db                              # Uses the local SQLite bank.db file for the demo.
-      - key: ACCESS_TOKEN_MINUTES                             # Defines how long access tokens remain valid.
-        value: "60"                                           # Sets access-token lifetime to 60 minutes.</code></pre>
-        <div class="flow-box">GitHub → render.yaml → Render build → install requirements → start Uvicorn → check /health → public website</div>
+    healthCheckPath: /health                                  # Uses /health to confirm the service is available.
+    envVars:                                                  # Starts the environment-variable section.
+      - key: PYTHON_VERSION                                   # Defines the desired Python version.
+        value: "3.12.14"                                      # Pins the deployment to Python 3.12.14.
+      - key: JWT_SECRET                                       # Defines the JWT signing secret.
+        generateValue: true                                   # Lets Render securely generate the secret.
+      - key: DATABASE_URL                                     # Defines the database connection string.
+        value: sqlite:///bank.db                              # Uses SQLite for disposable portfolio data.
+      - key: ACCESS_TOKEN_MINUTES                             # Defines JWT lifetime.
+        value: "60"                                           # Sets access tokens to expire after 60 minutes.</code></pre>
+        <div class="flow-box">GitHub → render.yaml → Render build → Uvicorn → /health → public application</div>
       </section>
 
       <section id="architecture" class="walkthrough-section architecture-section">
         <span class="section-number">19</span>
         <h2>How all the technologies fit together</h2>
-        <p>This is the full development, testing and deployment flow to remember.</p>
         <div class="stack-flow">
           <div><strong>VS Code</strong><span>Write, run and manage the project.</span></div>
-          <div><strong>Python</strong><span>Programming language for the application.</span></div>
-          <div><strong>FastAPI</strong><span>Defines REST endpoints such as /accounts and /transfers.</span></div>
-          <div><strong>Pydantic</strong><span>Validates incoming API data.</span></div>
-          <div><strong>Business logic</strong><span>Checks balances, currency and duplicate references.</span></div>
-          <div><strong>SQLAlchemy</strong><span>Maps Python operations to database queries.</span></div>
+          <div><strong>Python</strong><span>Implements the backend application.</span></div>
+          <div><strong>FastAPI</strong><span>Defines REST endpoints and serves the web application.</span></div>
+          <div><strong>Pydantic</strong><span>Validates API request and response data.</span></div>
+          <div><strong>Business logic</strong><span>Checks balances, currencies and transaction references.</span></div>
+          <div><strong>SQLAlchemy</strong><span>Maps Python operations to relational database queries.</span></div>
           <div><strong>SQLite</strong><span>Stores users, accounts, balances and transactions.</span></div>
-          <div><strong>PyJWT</strong><span>Creates and verifies JWT authentication tokens.</span></div>
-          <div><strong>Uvicorn</strong><span>Runs the FastAPI web server.</span></div>
-          <div><strong>Swagger /docs</strong><span>Provides interactive API documentation.</span></div>
-          <div><strong>Pytest + HTTPX</strong><span>Automatically verify application behaviour.</span></div>
-          <div><strong>Git</strong><span>Tracks source-code changes locally.</span></div>
-          <div><strong>GitHub</strong><span>Stores the project and collaboration history online.</span></div>
-          <div><strong>GitHub Actions</strong><span>Runs automated CI checks.</span></div>
+          <div><strong>PyJWT</strong><span>Creates and verifies authentication tokens.</span></div>
+          <div><strong>Uvicorn</strong><span>Runs the FastAPI application server.</span></div>
+          <div><strong>Swagger /docs</strong><span>Provides interactive OpenAPI documentation.</span></div>
+          <div><strong>Pytest + HTTPX</strong><span>Verify application behaviour automatically.</span></div>
+          <div><strong>Git</strong><span>Tracks source changes locally.</span></div>
+          <div><strong>GitHub</strong><span>Stores the repository and collaboration history.</span></div>
+          <div><strong>GitHub Actions</strong><span>Runs CI and automated verification.</span></div>
           <div><strong>render.yaml</strong><span>Defines deployment configuration as code.</span></div>
-          <div><strong>Render</strong><span>Hosts the application publicly on the internet.</span></div>
+          <div><strong>Render</strong><span>Hosts the application publicly.</span></div>
         </div>
-        <blockquote class="interview-quote">I use VS Code to develop the Python application. FastAPI exposes the REST endpoints, Pydantic validates requests, SQLAlchemy communicates with SQLite, PyJWT secures protected endpoints, Uvicorn runs the web server, Pytest and HTTPX test the API, Git stores the changes, GitHub Actions performs CI, and Render deploys the application using the configuration in render.yaml.</blockquote>
+        <blockquote class="summary-quote">I use VS Code to develop the Python application. FastAPI exposes REST endpoints, Pydantic validates requests, SQLAlchemy communicates with SQLite, PyJWT secures protected endpoints, Uvicorn runs the web server, Pytest and HTTPX test the API, Git tracks changes, GitHub Actions performs CI, and Render deploys the application using render.yaml.</blockquote>
       </section>
 
       <div class="walkthrough-footer-actions">
