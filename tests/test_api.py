@@ -19,16 +19,29 @@ def register_and_login(username="samuel"):
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
-def test_dashboard_and_static_assets_are_served():
+def test_dashboard_walkthrough_and_static_assets_are_served():
     dashboard = client.get("/")
+    walkthrough = client.get("/walkthrough")
     styles = client.get("/static/styles.css")
+    walkthrough_styles = client.get("/static/walkthrough.css")
     script = client.get("/static/app.js")
 
     assert dashboard.status_code == 200
     assert "Bank Transaction System" in dashboard.text
     assert "live FastAPI backend" in dashboard.text
+    assert 'href="/walkthrough"' in dashboard.text
+
+    assert walkthrough.status_code == 200
+    assert "Build From Scratch Walkthrough" in walkthrough.text
+    assert "git clone" in walkthrough.text
+    assert ".github/workflows/tests.yml" in walkthrough.text
+    assert "render.yaml" in walkthrough.text
+    assert "How all the technologies fit together" in walkthrough.text
+
     assert styles.status_code == 200
     assert ".account-card" in styles.text
+    assert walkthrough_styles.status_code == 200
+    assert ".walkthrough-layout" in walkthrough_styles.text
     assert script.status_code == 200
     assert 'api("/accounts")' in script.text
 
