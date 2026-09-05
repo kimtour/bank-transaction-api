@@ -53,7 +53,9 @@ app/config.py                 # Environment-based configuration.
 app/static/index.html         # Banking dashboard HTML.
 app/static/styles.css         # Responsive dashboard styling.
 app/static/app.js             # Browser logic that calls the FastAPI endpoints.
-tests/test_api.py             # 12 automated backend and dashboard test cases.
+app/static/walkthrough.html   # Browser-based technical walkthrough.
+app/static/walkthrough.css    # Walkthrough page styling.
+tests/test_api.py             # Automated backend and dashboard test cases.
 scripts/live_smoke.py         # End-to-end verification against the public Render service.
 .github/workflows/tests.yml   # CI compilation, tests and Docker build.
 .github/workflows/live-smoke.yml  # Hosted end-to-end smoke workflow.
@@ -108,6 +110,7 @@ python -m uvicorn app.main:app --reload  # Start FastAPI and reload after source
 Open:
 
 - Dashboard: `http://127.0.0.1:8000/`
+- Walkthrough: `http://127.0.0.1:8000/walkthrough`
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - Health endpoint: `http://127.0.0.1:8000/health`
 
@@ -160,7 +163,7 @@ GitHub main branch
   -> Render reads render.yaml
   -> install Python dependencies
   -> start Uvicorn
-  -> serve dashboard and API
+  -> serve dashboard, walkthrough and API
   -> check /health
   -> expose public URL
 ```
@@ -168,6 +171,7 @@ GitHub main branch
 Live URLs:
 
 - Dashboard: https://samuel-kimani-bank-api-demo.onrender.com/
+- Walkthrough: https://samuel-kimani-bank-api-demo.onrender.com/walkthrough
 - Swagger UI: https://samuel-kimani-bank-api-demo.onrender.com/docs
 - Health: https://samuel-kimani-bank-api-demo.onrender.com/health
 
@@ -192,7 +196,7 @@ checks dashboard HTML, CSS and JavaScript
   -> verifies transaction history
 ```
 
-This confirms that the real hosted full-stack application works, not only that the web server is reachable.
+This confirms that the real hosted full-stack application works, rather than only proving the web server is reachable.
 
 ## Development lifecycle summary
 
@@ -203,6 +207,7 @@ Requirements
   -> implement banking business rules
   -> add authentication
   -> build browser dashboard
+  -> add technical walkthrough
   -> test locally
   -> write automated tests
   -> build Docker image
