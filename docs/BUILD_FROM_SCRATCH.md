@@ -27,7 +27,7 @@ source .venv/bin/activate   # Activate that environment on macOS/Linux.
 ## 4. Install project dependencies
 
 ```bash
-pip install -r requirements.txt  # Install FastAPI, Uvicorn, SQLAlchemy, Pydantic, PyJWT, Pytest and HTTPX.
+python -m pip install -r requirements.txt  # Install all pinned application and testing dependencies.
 ```
 
 Key packages:
@@ -43,23 +43,25 @@ Key packages:
 ## 5. Understand the project structure
 
 ```text
-app/main.py          # FastAPI application and HTTP routes.
-app/models.py        # SQLAlchemy database tables.
-app/schemas.py       # Pydantic request and response validation models.
-app/services.py      # Banking business rules such as transfer validation.
-app/security.py      # Password hashing and JWT authentication.
-app/database.py      # SQLAlchemy engine and database sessions.
-app/config.py        # Environment-based configuration.
-tests/test_api.py    # Automated API tests.
-.github/workflows/   # GitHub Actions CI and live smoke-test workflows.
-render.yaml          # Render deployment configuration.
+app/main.py                   # FastAPI application and HTTP routes.
+app/models.py                 # SQLAlchemy database tables.
+app/schemas.py                # Pydantic request and response validation models.
+app/services.py               # Banking business rules such as transfer validation.
+app/security.py               # Password hashing and JWT authentication.
+app/database.py               # SQLAlchemy engine and database sessions.
+app/config.py                 # Environment-based configuration.
+tests/test_api.py             # 11 automated API test cases.
+scripts/live_smoke.py         # End-to-end verification against the public Render service.
+.github/workflows/tests.yml   # CI compilation, tests and Docker build.
+.github/workflows/live-smoke.yml  # Hosted end-to-end smoke workflow.
+render.yaml                   # Render deployment configuration.
 ```
 
 ## 6. Run the API locally
 
 ```bash
-cp .env.example .env             # Create a local environment configuration file.
-uvicorn app.main:app --reload    # Start the FastAPI server and reload it automatically after code changes.
+cp .env.example .env                 # Create a local environment configuration file.
+python -m uvicorn app.main:app --reload  # Start FastAPI and reload after source-code changes.
 ```
 
 Open:
@@ -76,7 +78,15 @@ pytest -q  # Run the automated API test suite with compact output.
 
 The suite validates authentication, account creation, deposits, transfers, transaction history, insufficient funds, duplicate references, invalid tokens, invalid amounts, account ownership, same-account transfers and currency mismatch handling.
 
-## 8. Commit and push changes
+## 8. Build the Docker image
+
+```bash
+docker build -t bank-transaction-api .  # Build the Docker image using the project's Dockerfile.
+```
+
+The CI workflow performs this build automatically as well, which verifies that the container packaging remains valid after changes.
+
+## 9. Commit and push changes
 
 ```bash
 git status                              # Show files that have changed.
@@ -85,7 +95,7 @@ git commit -m "Update banking API"     # Save a versioned snapshot of the staged
 git push origin main                    # Upload the new commit to GitHub's main branch.
 ```
 
-## 9. Continuous Integration
+## 10. Continuous Integration
 
 `.github/workflows/tests.yml` automatically:
 
@@ -94,11 +104,13 @@ Push code
   -> checkout repository
   -> install Python 3.12
   -> install requirements.txt
+  -> compile app
   -> run pytest
+  -> build Docker image
   -> report success or failure
 ```
 
-## 10. Cloud deployment
+## 11. Cloud deployment
 
 `render.yaml` tells Render how to deploy the application:
 
@@ -117,9 +129,27 @@ Live URLs:
 - Swagger UI: https://samuel-kimani-bank-api-demo.onrender.com/docs
 - Health: https://samuel-kimani-bank-api-demo.onrender.com/health
 
-## 11. Live verification
+## 12. Verify the actual hosted banking flow
 
-`.github/workflows/live-smoke.yml` independently checks the deployed service from GitHub Actions. It verifies the landing page, `/health`, `/docs` and `/openapi.json` contract after changes are pushed.
+`.github/workflows/live-smoke.yml` runs:
+
+```bash
+python scripts/live_smoke.py  # Test the deployed Render API end to end.
+```
+
+The script automatically:
+
+```text
+checks /health, /, /docs and /openapi.json
+  -> registers a unique temporary user
+  -> logs in and obtains JWT
+  -> creates two KES accounts
+  -> transfers KES 750
+  -> verifies balances
+  -> verifies transaction history
+```
+
+This confirms that the real hosted API can execute the core authenticated banking workflow, not only that the web server is reachable.
 
 ## Development lifecycle summary
 
@@ -131,9 +161,10 @@ Requirements
   -> add authentication
   -> test locally
   -> write automated tests
+  -> build Docker image
   -> commit with Git
   -> push to GitHub
   -> CI runs
   -> Render deploys
-  -> live smoke test verifies hosting
+  -> live end-to-end smoke test verifies the hosted banking flow
 ```
